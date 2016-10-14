@@ -23,6 +23,10 @@ def get_backend():
     return BACKEND
 
 
+def get_user_id(request):
+    return request.session.setdefault('experiment_user_id', str(uuid.uuid4()))
+
+
 class ExperimentModelAdmin(ModelAdmin):
     model = Experiment
     add_to_settings_menu = True
@@ -32,11 +36,22 @@ modeladmin_register(ExperimentModelAdmin)
 
 @hooks.register('before_serve_page')
 def check_experiments(page, request, serve_args, serve_kwargs):
+    # If the page being served is the goal page of an experiment, log a completion
+    completed_experiments = Experiment.objects.filter(goal=page)
+
+    if completed_experiments:
+        backend = get_backend()
+        user_id = get_user_id(request)
+
+        for experiment in completed_experiments:
+            variation = experiment.get_variation_for_user(user_id)
+            backend.record_completion(experiment, user_id, variation)
+
     # If the page being served is the control page of an experiment, run the experiment
     experiments = Experiment.objects.filter(control_page=page)
     if experiments:
         experiment = experiments[0]
-        user_id = request.session.setdefault('experiment_user_id', str(uuid.uuid4()))
+        user_id = get_user_id(request)
         variation = experiment.get_variation_for_user(user_id)
 
         get_backend().record_participant(experiment, user_id, variation)

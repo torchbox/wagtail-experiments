@@ -30,6 +30,7 @@ class Migration(migrations.Migration):
                 ('name', models.CharField(max_length=255)),
                 ('slug', models.SlugField(max_length=255)),
                 ('control_page', models.ForeignKey(related_name='+', to='wagtailcore.Page')),
+                ('goal', models.ForeignKey(related_name='+', to='wagtailcore.Page')),
             ],
             options={
                 'abstract': False,

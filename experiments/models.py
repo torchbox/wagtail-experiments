@@ -16,12 +16,14 @@ class Experiment(ClusterableModel):
     name = models.CharField(max_length=255)
     slug = models.SlugField(max_length=255)
     control_page = models.ForeignKey('wagtailcore.Page', related_name='+', on_delete=models.CASCADE)
+    goal = models.ForeignKey('wagtailcore.Page', related_name='+', on_delete=models.CASCADE)
 
     panels = [
         FieldPanel('name'),
         FieldPanel('slug'),
         PageChooserPanel('control_page'),
         InlinePanel('alternatives', label="Alternatives"),
+        PageChooserPanel('goal'),
     ]
 
     def get_variations(self):
