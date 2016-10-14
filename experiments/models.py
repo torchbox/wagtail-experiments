@@ -47,3 +47,19 @@ class Alternative(Orderable):
     panels = [
         PageChooserPanel('page'),
     ]
+
+
+class ExperimentHistory(models.Model):
+    """
+    Records the number of participants and completions on a given day for a given variation of an experiment
+    """
+    experiment = models.ForeignKey(Experiment, related_name='history', on_delete=models.CASCADE)
+    date = models.DateField()
+    variation = models.ForeignKey('wagtailcore.Page', related_name='+', on_delete=models.CASCADE)
+    participant_count = models.PositiveIntegerField(default=0)
+    completion_count = models.PositiveIntegerField(default=0)
+
+    class Meta:
+        unique_together = [
+            ('experiment', 'date', 'variation'),
+        ]
