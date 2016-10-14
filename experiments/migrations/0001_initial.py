@@ -15,19 +15,20 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='Alternative',
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('sort_order', models.IntegerField(editable=False, blank=True, null=True)),
+                ('id', models.AutoField(primary_key=True, auto_created=True, verbose_name='ID', serialize=False)),
+                ('sort_order', models.IntegerField(null=True, blank=True, editable=False)),
             ],
             options={
-                'ordering': ['sort_order'],
                 'abstract': False,
+                'ordering': ['sort_order'],
             },
         ),
         migrations.CreateModel(
             name='Experiment',
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('id', models.AutoField(primary_key=True, auto_created=True, verbose_name='ID', serialize=False)),
                 ('name', models.CharField(max_length=255)),
+                ('slug', models.SlugField(max_length=255)),
                 ('control_page', models.ForeignKey(related_name='+', to='wagtailcore.Page')),
             ],
             options={
