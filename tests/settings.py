@@ -73,6 +73,7 @@ else:
 
 INSTALLED_APPS = (
     'experiments',
+    'tests',
 
     'wagtail.contrib.modeladmin',
     'wagtail.wagtailsearch',
