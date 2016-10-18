@@ -36,6 +36,9 @@ modeladmin_register(ExperimentModelAdmin)
 
 @hooks.register('before_serve_page')
 def check_experiments(page, request, serve_args, serve_kwargs):
+    # TODO: Always display winner, when winner choosing is ready
+    # TODO: Do not count goal twice (probably should be in backend)
+
     # If the page being served is the goal page of an experiment, log a completion
     completed_experiments = Experiment.objects.filter(goal=page, status='live')
 
