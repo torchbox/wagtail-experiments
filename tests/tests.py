@@ -113,3 +113,24 @@ class TestIndexView(TestCase):
         )
         self.assertEqual(history_record.participant_count, 1)
         self.assertEqual(history_record.completion_count, 1)
+
+    def test_draft_status(self):
+        self.experiment.status = 'draft'
+        self.experiment.save()
+
+        session = self.client.session
+        session['experiment_user_id'] = '33333333-3333-3333-3333-333333333333'
+        session.save()
+        response = self.client.get('/')
+
+        # User 33333333-3333-3333-3333-333333333333 would get alternative 1 when the experiment is live,
+        # but should get the standard homepage when it's draft
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, '<p>Welcome to our site!</p>')
+
+        # no participant record should be logged
+        self.assertEqual(ExperimentHistory.objects.filter(experiment=self.experiment).count(), 0)
+
+        # completions should not be logged either
+        self.client.get('/signup-complete/')
+        self.assertEqual(ExperimentHistory.objects.filter(experiment=self.experiment).count(), 0)

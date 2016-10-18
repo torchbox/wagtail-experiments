@@ -37,7 +37,7 @@ modeladmin_register(ExperimentModelAdmin)
 @hooks.register('before_serve_page')
 def check_experiments(page, request, serve_args, serve_kwargs):
     # If the page being served is the goal page of an experiment, log a completion
-    completed_experiments = Experiment.objects.filter(goal=page)
+    completed_experiments = Experiment.objects.filter(goal=page, status='live')
 
     if completed_experiments:
         backend = get_backend()
@@ -48,7 +48,7 @@ def check_experiments(page, request, serve_args, serve_kwargs):
             backend.record_completion(experiment, user_id, variation)
 
     # If the page being served is the control page of an experiment, run the experiment
-    experiments = Experiment.objects.filter(control_page=page)
+    experiments = Experiment.objects.filter(control_page=page, status='live')
     if experiments:
         experiment = experiments[0]
         user_id = get_user_id(request)

@@ -13,10 +13,15 @@ from wagtail.wagtailcore.models import Orderable
 
 @python_2_unicode_compatible
 class Experiment(ClusterableModel):
+    STATUS_CHOICES = [
+        ('draft', "Draft"),
+        ('live', "Live"),
+    ]
     name = models.CharField(max_length=255)
     slug = models.SlugField(max_length=255)
     control_page = models.ForeignKey('wagtailcore.Page', related_name='+', on_delete=models.CASCADE)
     goal = models.ForeignKey('wagtailcore.Page', related_name='+', on_delete=models.CASCADE)
+    status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='draft')
 
     panels = [
         FieldPanel('name'),
@@ -24,6 +29,7 @@ class Experiment(ClusterableModel):
         PageChooserPanel('control_page'),
         InlinePanel('alternatives', label="Alternatives"),
         PageChooserPanel('goal'),
+        FieldPanel('status'),
     ]
 
     def get_variations(self):

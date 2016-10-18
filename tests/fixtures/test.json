@@ -128,7 +128,8 @@
         "name": "Homepage text",
         "slug": "homepage-text",
         "control_page": 2,
-        "goal": 5
+        "goal": 5,
+        "status": "live"
     }
 },
 {
