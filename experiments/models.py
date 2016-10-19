@@ -1,7 +1,9 @@
 from __future__ import absolute_import, unicode_literals
 
 from hashlib import sha1
+from importlib import import_module
 
+from django.conf import settings
 from django.db import models
 from django.utils.encoding import python_2_unicode_compatible
 
@@ -9,6 +11,18 @@ from modelcluster.fields import ParentalKey
 from modelcluster.models import ClusterableModel
 from wagtail.wagtailadmin.edit_handlers import FieldPanel, PageChooserPanel, InlinePanel
 from wagtail.wagtailcore.models import Orderable
+
+
+BACKEND = None
+
+
+def get_backend():
+    global BACKEND
+    if BACKEND is None:
+        backend_name = getattr(settings, 'WAGTAIL_EXPERIMENTS_BACKEND', 'experiments.backends.db')
+        BACKEND = import_module(backend_name)
+
+    return BACKEND
 
 
 @python_2_unicode_compatible
@@ -45,6 +59,19 @@ class Experiment(ClusterableModel):
         hash_str = sha1(hash_input.encode('utf-8')).hexdigest()[:7]
         variation_index = int(hash_str, 16) % len(variations)
         return variations[variation_index]
+
+    def start_experiment_for_user(self, user_id):
+        """
+        Record a new participant and return the variation for them to use
+        """
+        variation = self.get_variation_for_user(user_id)
+        get_backend().record_participant(self, user_id, variation)
+        return variation
+
+    def record_completion_for_user(self, user_id):
+        backend = get_backend()
+        variation = self.get_variation_for_user(user_id)
+        backend.record_completion(self, user_id, variation)
 
     def __str__(self):
         return self.name
