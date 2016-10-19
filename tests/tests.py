@@ -6,7 +6,7 @@ from wagtail.wagtailcore.models import Page
 from experiments.models import Experiment, ExperimentHistory
 
 
-class TestIndexView(TestCase):
+class TestFrontEndView(TestCase):
     fixtures = ['test.json']
 
     def setUp(self):
