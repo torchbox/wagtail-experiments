@@ -25,6 +25,10 @@ def record_participant(experiment, user_id, variation, request):
 
 
 def record_completion(experiment, user_id, variation, request):
+    # abort if this user never started the experiment
+    if experiment.id not in request.session.get('experiments_started', []):
+        return
+
     # abort if this user has completed already
     experiments_completed = request.session.get('experiments_completed', [])
     if experiment.id in experiments_completed:
