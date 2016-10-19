@@ -1,15 +1,10 @@
 from __future__ import absolute_import, unicode_literals
 
-import uuid
-
 from wagtail.contrib.modeladmin.options import ModelAdmin, modeladmin_register
 from wagtail.wagtailcore import hooks
 
 from .models import Experiment
-
-
-def get_user_id(request):
-    return request.session.setdefault('experiment_user_id', str(uuid.uuid4()))
+from .utils import get_user_id
 
 
 class ExperimentModelAdmin(ModelAdmin):

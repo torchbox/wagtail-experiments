@@ -141,6 +141,47 @@ class TestFrontEndView(TestCase):
         # so there should be no participation or completion records
         self.assertEqual(ExperimentHistory.objects.filter(experiment=self.experiment).count(), 0)
 
+    def test_completion_through_direct_url(self):
+        # User 11111111-1111-1111-1111-111111111111
+        session = self.client.session
+        session['experiment_user_id'] = '11111111-1111-1111-1111-111111111111'
+        session.save()
+        self.client.get('/')
+
+        # history record should show 1 participant, 0 completions
+        history_record = ExperimentHistory.objects.get(
+            experiment=self.experiment, variation=self.homepage
+        )
+        self.assertEqual(history_record.participant_count, 1)
+        self.assertEqual(history_record.completion_count, 0)
+
+        self.client.get('/experiments/complete/homepage-text/')
+
+        # history record should show 1 participant, 1 completion
+        history_record = ExperimentHistory.objects.get(
+            experiment=self.experiment, variation=self.homepage
+        )
+        self.assertEqual(history_record.participant_count, 1)
+        self.assertEqual(history_record.completion_count, 1)
+
+        # repeated completions from the same user should not update the count
+        self.client.get('/experiments/complete/homepage-text/')
+        history_record = ExperimentHistory.objects.get(
+            experiment=self.experiment, variation=self.homepage
+        )
+        self.assertEqual(history_record.participant_count, 1)
+        self.assertEqual(history_record.completion_count, 1)
+
+    def test_completion_through_direct_url_is_not_counted_if_experiment_not_started(self):
+        session = self.client.session
+        session['experiment_user_id'] = '11111111-1111-1111-1111-111111111111'
+        session.save()
+        self.client.get('/experiments/complete/homepage-text/')
+
+        # this user went directly to the goal page without participating in the experiment,
+        # so there should be no participation or completion records
+        self.assertEqual(ExperimentHistory.objects.filter(experiment=self.experiment).count(), 0)
+
     def test_draft_status(self):
         self.experiment.status = 'draft'
         self.experiment.save()
