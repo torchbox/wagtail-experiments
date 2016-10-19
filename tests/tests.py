@@ -156,3 +156,18 @@ class TestIndexView(TestCase):
         session.save()
         response = self.client.get('/')
         self.assertContains(response, '<li class="current">Home</li>')
+
+    def test_completed_status(self):
+        self.experiment.status = 'completed'
+        self.experiment.winning_variation = self.homepage_alternative_2
+        self.experiment.save()
+
+        # all users should be served the winning variation
+
+        session = self.client.session
+        session['experiment_user_id'] = '11111111-1111-1111-1111-111111111111'
+        session.save()
+        response = self.client.get('/')
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "<p>Oh, it&#39;s you. What do you want?</p>")

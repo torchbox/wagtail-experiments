@@ -16,12 +16,14 @@ class Experiment(ClusterableModel):
     STATUS_CHOICES = [
         ('draft', "Draft"),
         ('live', "Live"),
+        ('completed', "Completed"),
     ]
     name = models.CharField(max_length=255)
     slug = models.SlugField(max_length=255)
     control_page = models.ForeignKey('wagtailcore.Page', related_name='+', on_delete=models.CASCADE)
     goal = models.ForeignKey('wagtailcore.Page', related_name='+', on_delete=models.CASCADE)
     status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='draft')
+    winning_variation = models.ForeignKey('wagtailcore.Page', related_name='+', on_delete=models.SET_NULL, null=True)
 
     panels = [
         FieldPanel('name'),
