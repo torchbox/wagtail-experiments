@@ -21,8 +21,6 @@ modeladmin_register(ExperimentModelAdmin)
 
 @hooks.register('before_serve_page')
 def check_experiments(page, request, serve_args, serve_kwargs):
-    # TODO: Do not count goal twice (probably should be in backend)
-
     # If the page being served is the goal page of an experiment, log a completion
     completed_experiments = Experiment.objects.filter(goal=page, status='live')
 
@@ -30,7 +28,7 @@ def check_experiments(page, request, serve_args, serve_kwargs):
         user_id = get_user_id(request)
 
         for experiment in completed_experiments:
-            experiment.record_completion_for_user(user_id)
+            experiment.record_completion_for_user(user_id, request)
 
     # If the page being served is the control page of an experiment, run the experiment
     experiments = Experiment.objects.filter(control_page=page, status__in=('live', 'completed'))
@@ -41,7 +39,7 @@ def check_experiments(page, request, serve_args, serve_kwargs):
             variation = experiment.winning_variation
         else:
             user_id = get_user_id(request)
-            variation = experiment.start_experiment_for_user(user_id)
+            variation = experiment.start_experiment_for_user(user_id, request)
 
         if variation.pk != page.pk:
             # serve this alternative instead of the current page

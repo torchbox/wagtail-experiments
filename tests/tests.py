@@ -40,6 +40,7 @@ class TestFrontEndView(TestCase):
             self.assertEqual(response.status_code, 200)
             self.assertContains(response, '<p>Welcome to our site!</p>')
 
+        session.clear()
         session['experiment_user_id'] = '33333333-3333-3333-3333-333333333333'
         session.save()
 
@@ -66,7 +67,7 @@ class TestFrontEndView(TestCase):
         self.assertEqual(history_record.participant_count, 1)
 
         # User 22222222-2222-2222-2222-222222222222
-        session = self.client.session
+        session.clear()
         session['experiment_user_id'] = '22222222-2222-2222-2222-222222222222'
         session.save()
         self.client.get('/')
@@ -78,8 +79,16 @@ class TestFrontEndView(TestCase):
         )
         self.assertEqual(history_record.participant_count, 2)
 
+        # repeated requests from the same user should not update the count
+        self.client.get('/')
+        self.assertEqual(ExperimentHistory.objects.filter(experiment=self.experiment).count(), 1)
+        history_record = ExperimentHistory.objects.get(
+            experiment=self.experiment, variation=self.homepage
+        )
+        self.assertEqual(history_record.participant_count, 2)
+
         # User 33333333-3333-3333-3333-333333333333
-        session = self.client.session
+        session.clear()
         session['experiment_user_id'] = '33333333-3333-3333-3333-333333333333'
         session.save()
         self.client.get('/')
@@ -108,6 +117,14 @@ class TestFrontEndView(TestCase):
         self.client.get('/signup-complete/')
 
         # history record should show 1 participant, 1 completion
+        history_record = ExperimentHistory.objects.get(
+            experiment=self.experiment, variation=self.homepage
+        )
+        self.assertEqual(history_record.participant_count, 1)
+        self.assertEqual(history_record.completion_count, 1)
+
+        # repeated completions from the same user should not update the count
+        self.client.get('/signup-complete/')
         history_record = ExperimentHistory.objects.get(
             experiment=self.experiment, variation=self.homepage
         )
@@ -143,7 +160,7 @@ class TestFrontEndView(TestCase):
         self.assertContains(response, "<title>Home</title>")
 
         # User receiving an alternative version should see the title as "Home", not "Homepage alternative 1"
-        session = self.client.session
+        session.clear()
         session['experiment_user_id'] = '33333333-3333-3333-3333-333333333333'
         session.save()
         response = self.client.get('/')

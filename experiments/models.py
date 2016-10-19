@@ -60,18 +60,18 @@ class Experiment(ClusterableModel):
         variation_index = int(hash_str, 16) % len(variations)
         return variations[variation_index]
 
-    def start_experiment_for_user(self, user_id):
+    def start_experiment_for_user(self, user_id, request):
         """
         Record a new participant and return the variation for them to use
         """
         variation = self.get_variation_for_user(user_id)
-        get_backend().record_participant(self, user_id, variation)
+        get_backend().record_participant(self, user_id, variation, request)
         return variation
 
-    def record_completion_for_user(self, user_id):
+    def record_completion_for_user(self, user_id, request):
         backend = get_backend()
         variation = self.get_variation_for_user(user_id)
-        backend.record_completion(self, user_id, variation)
+        backend.record_completion(self, user_id, variation, request)
 
     def __str__(self):
         return self.name
