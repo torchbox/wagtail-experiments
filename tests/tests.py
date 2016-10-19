@@ -134,3 +134,25 @@ class TestIndexView(TestCase):
         # completions should not be logged either
         self.client.get('/signup-complete/')
         self.assertEqual(ExperimentHistory.objects.filter(experiment=self.experiment).count(), 0)
+
+    def test_original_title_is_preserved(self):
+        session = self.client.session
+        session['experiment_user_id'] = '11111111-1111-1111-1111-111111111111'
+        session.save()
+        response = self.client.get('/')
+        self.assertContains(response, "<title>Home</title>")
+
+        # User receiving an alternative version should see the title as "Home", not "Homepage alternative 1"
+        session = self.client.session
+        session['experiment_user_id'] = '33333333-3333-3333-3333-333333333333'
+        session.save()
+        response = self.client.get('/')
+        self.assertContains(response, "<title>Home</title>")
+
+    def test_original_tree_position_is_preserved(self):
+        # Alternate version should position itself in the tree as if it were the control page
+        session = self.client.session
+        session['experiment_user_id'] = '33333333-3333-3333-3333-333333333333'
+        session.save()
+        response = self.client.get('/')
+        self.assertContains(response, '<li class="current">Home</li>')

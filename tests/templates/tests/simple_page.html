@@ -1,8 +1,15 @@
 <!DOCTYPE HTML>
 <html>
-    <head>{{ page.title }}</head>
+    <head>
+        <title>{{ page.title }}</title>
+    </head>
     <body>
         <h1>{{ page.title }}</h1>
+        <ul class="breadcrumb">
+            {% for p in breadcrumb %}
+                <li {% if p.pk == page.pk %}class="current"{% endif %}>{{ p.title }}</li>
+            {% endfor %}
+        </ul>
         <p>{{ page.body }}</p>
     </body>
 </html>
