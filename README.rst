@@ -1,4 +1,6 @@
-wagtail-experiments
+.. image:: wagtail-experiments.png
+
+Wagtail Experiments
 ===================
 
 A/B testing for Wagtail
