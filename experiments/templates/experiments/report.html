@@ -1,5 +1,5 @@
 {% extends "wagtailadmin/base.html" %}
-{% load i18n %}
+{% load i18n staticfiles %}
 {% block titletag %}{% trans "Experiment results" %}{% endblock %}
 
 
@@ -29,19 +29,65 @@
                 {% for variation, variation_report in report_by_variation.items %}
                     <tr>
                         <td class="title"><a href="{% url 'wagtailadmin_pages:edit' variation.pk %}">{{ variation.title }}</a></td>
-                        <td>{{ variation_report.total_participant_count }} / {{ variation_report.total_completion_count }}</td>
+                        <td>{{ variation_report.total_completion_count }} / {{ variation_report.total_participant_count }}</td>
                         <td>{{ variation_report.total_conversions_rate|floatformat:2 }}%</td>
-                        <td></td>
+                        <td>
+                            <a class="button button-small button-primary" href="">
+                                {% trans 'Use this' %}
+                            </a>
+                        </td>
                     </tr>
                 {% endfor %}
             </tbody>
         </table>
 
         <h3>{% trans "Conversion rate / Day" %}</h3>
+        <div id="experiment-report-chart"></div>
 
-        <div>
+        <script type="text/javascript">
+            c3.generate({
+                bindto: '#experiment-report-chart',
+                data: {
+                    xs: {
+                        {% for variation in report_by_variation.keys %}
+                            '{{ variation.title|escapejs }}': 'x{{ variation.pk|escapejs }}'{% if not forloop.last %},{% endif %}
+                        {% endfor %}
+                    },
+                    columns: [
+                        {% for variation, variation_report in report_by_variation.items %}
+                            ['x{{ variation.pk|escapejs }}',
+                                {% for history_entry in variation_report.history %}
+                                    '{{ history_entry.date|date:"Y-m-d" }}'{% if not forloop.last %},{% endif %}
+                                {% endfor %}
+                            ],
 
-        </div>
+                            ['{{ variation.title|escapejs }}',
+                                {% for history_entry in variation_report.history %}
+                                    '{{ history_entry.conversions_rate|floatformat:2|escapejs }}'{% if not forloop.last %},{% endif %}
+                                {% endfor %}
+                            ]{% if not forloop.last %},{% endif %}
+                        {% endfor %}
+                    ]
+                },
+                axis: {
+                    x: {
+                        type: 'timeseries',
+                        tick: {
+                            format: '%Y-%m-%d'
+                        }
+                    }
+                }
+            });
+        </script>
 
     </div>
+{% endblock %}
+
+{% block extra_css %}
+    <link href="{% static "experiments/css/vendor/c3-v0.4.11.min.css" %}" rel="stylesheet" type="text/css">
+{% endblock %}
+
+{% block extra_js %}
+    <script type="text/javascript" src="{% static "experiments/js/vendor/d3-v3.5.17.min.js" %}" charset="utf-8"></script>
+    <script type="text/javascript" src="{% static "experiments/js/vendor/c3-v0.4.11.min.js" %}"></script>
 {% endblock %}
