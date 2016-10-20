@@ -19,9 +19,9 @@
             </colgroup>
             <thead>
                 <tr class="table-headers">
-                    <th>{% trans "Page title" %}</th>
+                    <th>{% trans "Page" %}</th>
                     <th>{% trans "Conversions" %}</th>
-                    <th>{% trans "Conversions rate" %}</th>
+                    <th>{% trans "Conversion rate" %}</th>
                     <th>{% trans "Actions" %}</th>
                 </tr>
             </thead>
@@ -30,7 +30,7 @@
                     <tr>
                         <td class="title"><a href="{% url 'wagtailadmin_pages:edit' variation.pk %}">{{ variation.title }}</a></td>
                         <td>{{ variation_report.total_completion_count }} / {{ variation_report.total_participant_count }}</td>
-                        <td>{{ variation_report.total_conversions_rate|floatformat:2 }}%</td>
+                        <td>{{ variation_report.total_conversion_rate|floatformat:2 }}%</td>
                         <td>
                             <a class="button button-small button-primary" href="">
                                 {% trans 'Use this' %}
@@ -63,11 +63,14 @@
 
                             ['{{ variation.title|escapejs }}',
                                 {% for history_entry in variation_report.history %}
-                                    '{{ history_entry.conversions_rate|floatformat:2|escapejs }}'{% if not forloop.last %},{% endif %}
+                                    '{{ history_entry.conversion_rate|floatformat:2|escapejs }}'{% if not forloop.last %},{% endif %}
                                 {% endfor %}
                             ]{% if not forloop.last %},{% endif %}
                         {% endfor %}
                     ]
+                },
+                padding: {
+                    right: 20
                 },
                 axis: {
                     x: {

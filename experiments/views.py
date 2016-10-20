@@ -30,12 +30,12 @@ def experiment_report(request, pk):
             if variation_report['variation_pk'] == variation.pk:
                 if 'history' in variation_report:
                     for history_entry in variation_report['history']:
-                        history_entry['conversions_rate'] = percentage(
+                        history_entry['conversion_rate'] = percentage(
                             history_entry['completion_count'],
                             history_entry['participant_count'],
                         )
 
-                variation_report['total_conversions_rate'] = percentage(
+                variation_report['total_conversion_rate'] = percentage(
                     variation_report['total_completion_count'],
                     variation_report['total_participant_count'],
                 )
