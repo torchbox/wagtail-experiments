@@ -1,0 +1,47 @@
+{% extends "wagtailadmin/base.html" %}
+{% load i18n %}
+{% block titletag %}{% trans "Experiment results" %}{% endblock %}
+
+
+{% block content %}
+    {% trans "Experiment results" as doc_str %}
+
+    {% include "wagtailadmin/shared/header.html" with title=doc_str subtitle=experiment.control_page.title icon="doc-full-inverse" %}
+
+    <div class="nice-padding">
+
+        <table class="listing">
+            <colgroup>
+                <col width="30%" />
+                <col />
+                <col />
+                <col />
+            </colgroup>
+            <thead>
+                <tr class="table-headers">
+                    <th>{% trans "Page title" %}</th>
+                    <th>{% trans "Conversions" %}</th>
+                    <th>{% trans "Conversions rate" %}</th>
+                    <th>{% trans "Actions" %}</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for variation, variation_report in report_by_variation.items %}
+                    <tr>
+                        <td class="title"><a href="{% url 'wagtailadmin_pages:edit' variation.pk %}">{{ variation.title }}</a></td>
+                        <td>{{ variation_report.total_participant_count }} / {{ variation_report.total_completion_count }}</td>
+                        <td>{{ variation_report.total_conversions_rate|floatformat:2 }}%</td>
+                        <td></td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <h3>{% trans "Conversion rate / Day" %}</h3>
+
+        <div>
+
+        </div>
+
+    </div>
+{% endblock %}

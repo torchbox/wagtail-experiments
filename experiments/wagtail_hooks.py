@@ -1,10 +1,19 @@
 from __future__ import absolute_import, unicode_literals
 
+from django.conf.urls import include, url
+from experiments import admin_urls
 from wagtail.contrib.modeladmin.options import ModelAdmin, modeladmin_register
 from wagtail.wagtailcore import hooks
 
 from .models import Experiment
 from .utils import get_user_id
+
+
+@hooks.register('register_admin_urls')
+def register_admin_urls():
+    return [
+        url(r'^experiments/', include(admin_urls, app_name='experiments', namespace='experiments')),
+    ]
 
 
 class ExperimentModelAdmin(ModelAdmin):
