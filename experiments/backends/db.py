@@ -56,7 +56,7 @@ def get_report(experiment):
         variation_data = {
             'variation_pk': variation.pk,
             'is_control': variation.pk == experiment.control_page.pk,
-            'is_winner': False,  # TODO: Needs real data
+            'is_winner': variation.pk == experiment.winning_variation.pk if experiment.winning_variation else False,
             'total_participant_count': history_entries.aggregate(sum=Sum('participant_count')).get('sum', 0),
             'total_completion_count': history_entries.aggregate(sum=Sum('completion_count')).get('sum', 0),
         }
