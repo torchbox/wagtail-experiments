@@ -39,6 +39,10 @@
                                     {% trans 'Use this' %}
                                 </button>
                             </form>
+                            <a class="button button-small button-primary" title="{% trans 'Preview' %}"
+                               href="{% url 'preview_for_report' variation.pk %}">
+                                <span class="icon icon-view"></span>
+                            </a>
                         </td>
                         {% if variation == winning_variation %}
                             <td class="icon icon-tick">{% trans 'Selected' %}</td>
@@ -100,6 +104,6 @@
 {% endblock %}
 
 {% block extra_js %}
-    <script type="text/javascript" src="{% static "experiments/js/vendor/d3-v3.5.17.min.js" %}" charset="utf-8"></script>
-    <script type="text/javascript" src="{% static "experiments/js/vendor/c3-v0.4.11.min.js" %}"></script>
+    <script src="{% static "experiments/js/vendor/d3-v3.5.17.min.js" %}"></script>
+    <script src="{% static "experiments/js/vendor/c3-v0.4.11.min.js" %}"></script>
 {% endblock %}

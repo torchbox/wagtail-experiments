@@ -1,6 +1,7 @@
 from __future__ import absolute_import, unicode_literals
 
-from django.http import Http404, HttpResponse
+from django.core.exceptions import PermissionDenied
+from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.utils.translation import ugettext as _
 
@@ -19,11 +20,11 @@ def record_completion(request, slug):
     return HttpResponse("OK")
 
 
-def experiment_report(request, pk):
+def experiment_report(request, experiment_pk):
     # TODO: Decide if we need a custom permission to access reports
 
     backend = get_backend()
-    experiment = get_object_or_404(Experiment, pk=pk)
+    experiment = get_object_or_404(Experiment, pk=experiment_pk)
     variations = experiment.get_variations()
 
     report = backend.get_report(experiment)
@@ -66,3 +67,13 @@ def select_winner(request, experiment_id, variation_id):
         )
 
     return redirect('experiments_experiment_modeladmin_report', experiment.pk)
+
+
+def preview_for_report(request, page_id):
+    page = get_object_or_404(Page, id=page_id).specific
+    if not page.permissions_for_user(request.user).can_publish():
+        raise PermissionDenied
+
+    # pass in the real user request rather than page.dummy_request(), so that request.user
+    # and request.revision_id will be picked up by the wagtail user bar
+    return page.serve_preview(request, page.default_preview_mode)

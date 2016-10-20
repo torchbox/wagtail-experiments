@@ -6,4 +6,5 @@ from experiments import views
 urlpatterns = [
     url(r'^experiment/report/(\d+)/$', views.experiment_report, name='experiments_experiment_modeladmin_report'),
     url(r'^experiment/select_winner/(\d+)/(\d+)/$', views.select_winner, name='experiments_experiment_select_winner'),
+    url(r'^experiment/report/preview/(\d+)/$', views.preview_for_report, name='preview_for_report'),
 ]
