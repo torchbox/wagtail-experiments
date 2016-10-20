@@ -1,7 +1,10 @@
 from __future__ import absolute_import, unicode_literals
 
 from django.conf.urls import include, url
+from django.contrib.admin.utils import quote
+from django.utils.translation import ugettext_lazy as _
 from experiments import admin_urls
+from wagtail.contrib.modeladmin.helpers import ButtonHelper
 from wagtail.contrib.modeladmin.options import ModelAdmin, modeladmin_register
 from wagtail.wagtailcore import hooks
 
@@ -12,13 +15,38 @@ from .utils import get_user_id
 @hooks.register('register_admin_urls')
 def register_admin_urls():
     return [
-        url(r'^experiments/', include(admin_urls, app_name='experiments', namespace='experiments')),
+        url(r'^experiments/', include(admin_urls)),
     ]
+
+
+class ExperimentButtonHelper(ButtonHelper):
+    def report_button(self, pk, classnames_add=[], classnames_exclude=[]):
+        classnames = classnames_add
+        cn = self.finalise_classname(classnames, classnames_exclude)
+        return {
+            'url': self.url_helper.get_action_url('report', quote(pk)),
+            'label': _('Show report'),
+            'classname': cn,
+            'title': _('Report for this %s') % self.verbose_name,
+        }
+
+    def get_buttons_for_obj(self, obj, exclude=[], classnames_add=[],
+                            classnames_exclude=[]):
+        ph = self.permission_helper
+        pk = quote(getattr(obj, self.opts.pk.attname))
+        btns = super(ExperimentButtonHelper, self).get_buttons_for_obj(obj, exclude, classnames_add, classnames_exclude)
+
+        if 'report' not in exclude and ph.user_can_edit_obj(self.request.user, obj):
+            btns.append(
+                self.report_button(pk, classnames_add, classnames_exclude)
+            )
+        return btns
 
 
 class ExperimentModelAdmin(ModelAdmin):
     model = Experiment
     add_to_settings_menu = True
+    button_helper_class = ExperimentButtonHelper
 
 modeladmin_register(ExperimentModelAdmin)
 
