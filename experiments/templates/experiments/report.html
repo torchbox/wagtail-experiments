@@ -38,11 +38,11 @@
                                 <button type="submit" class="button button-small button-primary">
                                     {% trans 'Use this' %}
                                 </button>
+                                <a class="button button-small button-primary" title="{% trans 'Preview' %}"
+                                   href="{% url 'experiments:preview_for_report' variation.pk %}">
+                                    <span class="icon icon-view"></span>
+                                </a>
                             </form>
-                            <a class="button button-small button-primary" title="{% trans 'Preview' %}"
-                               href="{% url 'experiments:preview_for_report' variation.pk %}">
-                                <span class="icon icon-view"></span>
-                            </a>
                         </td>
                         {% if variation == winning_variation %}
                             <td class="icon icon-tick">{% trans 'Selected' %}</td>
