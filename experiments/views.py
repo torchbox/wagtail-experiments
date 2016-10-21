@@ -20,11 +20,11 @@ def record_completion(request, slug):
     return HttpResponse("OK")
 
 
-def experiment_report(request, experiment_pk):
+def experiment_report(request, experiment_id):
     # TODO: Decide if we need a custom permission to access reports
 
     backend = get_backend()
-    experiment = get_object_or_404(Experiment, pk=experiment_pk)
+    experiment = get_object_or_404(Experiment, pk=experiment_id)
     variations = experiment.get_variations()
 
     report = backend.get_report(experiment)
