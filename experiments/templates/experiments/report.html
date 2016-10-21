@@ -23,6 +23,7 @@
                     <th>{% trans "Conversions" %}</th>
                     <th>{% trans "Conversion rate" %}</th>
                     <th>{% trans "Actions" %}</th>
+                    <th>{% if winning_variation %}{% trans "Winning variation" %}{% endif %}</th>
                 </tr>
             </thead>
             <tbody>
@@ -39,6 +40,11 @@
                                 </button>
                             </form>
                         </td>
+                        {% if variation == winning_variation %}
+                            <td class="icon icon-tick">{% trans 'Selected' %}</td>
+                        {% else %}
+                            <td></td>
+                        {% endif %}
                     </tr>
                 {% endfor %}
             </tbody>
