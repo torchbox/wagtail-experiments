@@ -32,9 +32,12 @@
                         <td>{{ variation_report.total_completion_count }} / {{ variation_report.total_participant_count }}</td>
                         <td>{{ variation_report.total_conversion_rate|floatformat:2 }}%</td>
                         <td>
-                            <a class="button button-small button-primary" href="">
-                                {% trans 'Use this' %}
-                            </a>
+                            <form action="{% url 'experiments_experiment_select_winner' experiment.pk variation.pk %}" method="POST">
+                                {% csrf_token %}
+                                <button type="submit" class="button button-small button-primary">
+                                    {% trans 'Use this' %}
+                                </button>
+                            </form>
                         </td>
                     </tr>
                 {% endfor %}

@@ -1,7 +1,11 @@
 from __future__ import absolute_import, unicode_literals
 
-from django.http import HttpResponse
-from django.shortcuts import get_object_or_404, render
+from django.http import Http404, HttpResponse
+from django.shortcuts import get_object_or_404, redirect, render
+from django.utils.translation import ugettext as _
+
+from wagtail.wagtailadmin import messages
+from wagtail.wagtailcore.models import Page
 
 from .models import Experiment, get_backend
 from .utils import get_user_id, percentage
@@ -46,3 +50,18 @@ def experiment_report(request, pk):
         'experiment': experiment,
         'report_by_variation': report_by_variation,
     })
+
+
+def select_winner(request, experiment_id, variation_id):
+    experiment = get_object_or_404(Experiment, pk=experiment_id)
+    variation = get_object_or_404(Page, pk=variation_id)
+
+    if request.method == 'POST':
+        experiment.select_winner(variation)
+
+        messages.success(
+            request,
+            _("Page '{0}' has been selected as the winning variation.").format(variation.title),
+        )
+
+    return redirect('experiments_experiment_modeladmin_report', experiment.pk)

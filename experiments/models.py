@@ -73,6 +73,11 @@ class Experiment(ClusterableModel):
         variation = self.get_variation_for_user(user_id)
         backend.record_completion(self, user_id, variation, request)
 
+    def select_winner(self, variation):
+        self.winning_variation = variation
+        self.status = 'completed'
+        self.save()
+
     def __str__(self):
         return self.name
 
