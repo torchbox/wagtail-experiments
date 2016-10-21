@@ -66,7 +66,7 @@ def select_winner(request, experiment_id, variation_id):
             _("Page '{0}' has been selected as the winning variation.").format(variation.title),
         )
 
-    return redirect('experiments_experiment_modeladmin_report', experiment.pk)
+    return redirect('experiments:report', experiment.pk)
 
 
 def preview_for_report(request, page_id):

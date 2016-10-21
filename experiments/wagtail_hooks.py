@@ -2,6 +2,7 @@ from __future__ import absolute_import, unicode_literals
 
 from django.conf.urls import include, url
 from django.contrib.admin.utils import quote
+from django.urls import reverse
 from django.utils.translation import ugettext_lazy as _
 from experiments import admin_urls
 from wagtail.contrib.modeladmin.helpers import ButtonHelper
@@ -15,7 +16,7 @@ from .utils import get_user_id
 @hooks.register('register_admin_urls')
 def register_admin_urls():
     return [
-        url(r'^experiments/', include(admin_urls)),
+        url(r'^experiments/', include(admin_urls, app_name='experiments', namespace='experiments')),
     ]
 
 
@@ -24,7 +25,7 @@ class ExperimentButtonHelper(ButtonHelper):
         classnames = classnames_add
         cn = self.finalise_classname(classnames, classnames_exclude)
         return {
-            'url': self.url_helper.get_action_url('report', quote(pk)),
+            'url': reverse('experiments:report', args=(quote(pk), )),
             'label': _('Show report'),
             'classname': cn,
             'title': _('Report for this %s') % self.verbose_name,

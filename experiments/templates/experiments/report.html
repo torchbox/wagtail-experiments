@@ -33,14 +33,14 @@
                         <td>{{ variation_report.total_completion_count }} / {{ variation_report.total_participant_count }}</td>
                         <td>{{ variation_report.total_conversion_rate|floatformat:2 }}%</td>
                         <td>
-                            <form action="{% url 'experiments_experiment_select_winner' experiment.pk variation.pk %}" method="POST">
+                            <form action="{% url 'experiments:select_winner' experiment.pk variation.pk %}" method="POST">
                                 {% csrf_token %}
                                 <button type="submit" class="button button-small button-primary">
                                     {% trans 'Use this' %}
                                 </button>
                             </form>
                             <a class="button button-small button-primary" title="{% trans 'Preview' %}"
-                               href="{% url 'preview_for_report' variation.pk %}">
+                               href="{% url 'experiments:preview_for_report' variation.pk %}">
                                 <span class="icon icon-view"></span>
                             </a>
                         </td>
