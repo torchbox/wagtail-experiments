@@ -2,7 +2,7 @@ from __future__ import absolute_import, unicode_literals
 
 from django.conf.urls import include, url
 from django.contrib.admin.utils import quote
-from django.urls import reverse
+from django.core.urlresolvers import reverse
 from django.utils.translation import ugettext_lazy as _
 from experiments import admin_urls
 from wagtail.contrib.modeladmin.helpers import ButtonHelper
