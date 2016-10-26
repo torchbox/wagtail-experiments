@@ -48,6 +48,25 @@ class Experiment(ClusterableModel):
         FieldPanel('status'),
     ]
 
+    def __init__(self, *args, **kwargs):
+        super(Experiment, self).__init__(*args, **kwargs)
+        self._initial_status = self.status
+
+    def save(self, *args, **kwargs):
+        result = super(Experiment, self).save(*args, **kwargs)
+        if self._initial_status == 'draft' and self.status == 'live':
+            # For any alternative pages that are unpublished, copy the latest draft revision
+            # to the main table (with is_live=False) so that the revision shown as an alternative
+            # is not an out-of-date one
+            for alternative in self.alternatives.select_related('page'):
+                if not alternative.page.live:
+                    revision = alternative.page.get_latest_revision_as_page()
+                    revision.live = False
+                    revision.has_unpublished_changes = True
+                    revision.save()
+
+        return result
+
     def get_variations(self):
         return [self.control_page] + [alt.page for alt in self.alternatives.select_related('page')]
 
