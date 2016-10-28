@@ -252,9 +252,9 @@ class TestAdmin(TestCase):
             self.client.login(username='admin', password='password')
         )
         self.experiment = Experiment.objects.get(slug='homepage-text')
-        self.homepage = Page.objects.get(url_path='/home/')
-        self.homepage_alternative_1 = Page.objects.get(url_path='/home/home-alternative-1/')
-        self.homepage_alternative_2 = Page.objects.get(url_path='/home/home-alternative-2/')
+        self.homepage = Page.objects.get(url_path='/home/').specific
+        self.homepage_alternative_1 = Page.objects.get(url_path='/home/home-alternative-1/').specific
+        self.homepage_alternative_2 = Page.objects.get(url_path='/home/home-alternative-2/').specific
 
     def get_edit_postdata(self, **kwargs):
         alternatives = self.experiment.alternatives.all()
@@ -328,6 +328,65 @@ class TestAdmin(TestCase):
         experiment = Experiment.objects.get(pk=self.experiment.pk)
         self.assertEqual(experiment.name, "Homepage text updated")
 
+    def test_draft_page_content_is_activated_when_experiment_goes_live(self):
+        # make a draft edit to homepage_alternative_1
+        self.homepage_alternative_1.body = 'updated'
+        self.homepage_alternative_1.save_revision()
+
+        # live database entry should not have been updated yet
+        homepage_alternative_1 = Page.objects.get(pk=self.homepage_alternative_1.pk).specific
+        self.assertEqual(homepage_alternative_1.body, "Welcome to our site! It's lovely to meet you.")
+
+        # submit an edit to the experiment, but preserve its live status
+        self.client.post(
+            '/admin/experiments/experiment/edit/%d/' % self.experiment.pk,
+            self.get_edit_postdata()
+        )
+        # editing an already-live experiment should not update the page content
+        homepage_alternative_1 = Page.objects.get(pk=self.homepage_alternative_1.pk).specific
+        self.assertEqual(homepage_alternative_1.body, "Welcome to our site! It's lovely to meet you.")
+
+        # make the experiment draft
+        self.client.post(
+            '/admin/experiments/experiment/edit/%d/' % self.experiment.pk,
+            self.get_edit_postdata(status='draft')
+        )
+        # page content should still be unchanged
+        homepage_alternative_1 = Page.objects.get(pk=self.homepage_alternative_1.pk).specific
+        self.assertEqual(homepage_alternative_1.body, "Welcome to our site! It's lovely to meet you.")
+
+        # set the experiment from draft to live
+        self.client.post(
+            '/admin/experiments/experiment/edit/%d/' % self.experiment.pk,
+            self.get_edit_postdata(status='live')
+        )
+        # page content should be updated to follow the draft revision now
+        homepage_alternative_1 = Page.objects.get(pk=self.homepage_alternative_1.pk).specific
+        self.assertEqual(homepage_alternative_1.body, 'updated')
+
+    def test_draft_page_content_is_not_activated_on_published_pages(self):
+        # publish homepage_alternative_1
+        self.homepage_alternative_1.save_revision().publish()
+
+        # make a draft edit to homepage_alternative_1
+        self.homepage_alternative_1.body = 'updated'
+        self.homepage_alternative_1.save_revision()
+
+        # make the experiment draft
+        self.client.post(
+            '/admin/experiments/experiment/edit/%d/' % self.experiment.pk,
+            self.get_edit_postdata(status='draft')
+        )
+        # set the experiment from draft to live
+        self.client.post(
+            '/admin/experiments/experiment/edit/%d/' % self.experiment.pk,
+            self.get_edit_postdata(status='live')
+        )
+
+        # page content should still be unchanged
+        homepage_alternative_1 = Page.objects.get(pk=self.homepage_alternative_1.pk).specific
+        self.assertEqual(homepage_alternative_1.body, "Welcome to our site! It's lovely to meet you.")
+
     def test_experiment_delete(self):
         response = self.client.get('/admin/experiments/experiment/delete/%d/' % self.experiment.pk)
         self.assertEqual(response.status_code, 200)
@@ -353,7 +412,7 @@ class TestAdmin(TestCase):
         )
         experiment = Experiment.objects.get(pk=self.experiment.pk)
         self.assertEqual(experiment.status, 'completed')
-        self.assertEqual(experiment.winning_variation, self.homepage_alternative_1)
+        self.assertEqual(experiment.winning_variation.pk, self.homepage_alternative_1.pk)
 
     def test_preview(self):
         response = self.client.get(
