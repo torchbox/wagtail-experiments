@@ -1,2 +1,3 @@
 *.pyc
+/.tox/
 /wagtail_experiments.egg-info/

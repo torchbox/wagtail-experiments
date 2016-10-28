@@ -1,0 +1,30 @@
+language: python
+cache: pip
+
+# Use container-based infrastructure
+sudo: false
+
+matrix:
+  include:
+   - env: TOXENV=py27-dj18-wt17
+     python: 2.7
+   - env: TOXENV=py27-dj19-wt17
+     python: 2.7
+   - env: TOXENV=py27-dj110-wt17
+     python: 2.7
+   - env: TOXENV=py34-dj110-wt17
+     python: 3.4
+   - env: TOXENV=py35-dj18-wt17
+     python: 3.5
+   - env: TOXENV=py35-dj19-wt17
+     python: 3.5
+   - env: TOXENV=py35-dj110-wt17
+     python: 3.5
+
+# Package installation
+install:
+  - pip install tox
+
+# Run the tests
+script:
+  tox
