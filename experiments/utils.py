@@ -12,3 +12,13 @@ def percentage(fraction, population):
         return float(fraction) / float(population) * 100
     except (ValueError, ZeroDivisionError, TypeError):
         return 0.0
+
+
+def impersonate_other_page(page, other):
+    """Modify the title and tree location data of `page` to resemble `other`"""
+    page.id = other.id
+    page.pk = other.pk
+    page.path = other.path
+    page.depth = other.depth
+    page.url_path = other.url_path
+    page.title = other.title

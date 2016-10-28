@@ -10,7 +10,7 @@ from wagtail.contrib.modeladmin.options import ModelAdmin, modeladmin_register
 from wagtail.wagtailcore import hooks
 
 from .models import Experiment
-from .utils import get_user_id
+from .utils import get_user_id, impersonate_other_page
 
 
 @hooks.register('register_admin_urls')
@@ -80,11 +80,6 @@ def check_experiments(page, request, serve_args, serve_kwargs):
             variation = variation.specific
 
             # hack the title and page-tree-related fields to match the control page
-            variation.id = page.id
-            variation.pk = page.pk
-            variation.path = page.path
-            variation.depth = page.depth
-            variation.url_path = page.url_path
-            variation.title = page.title
+            impersonate_other_page(variation, page)
 
             return variation.serve(request, *serve_args, **serve_kwargs)

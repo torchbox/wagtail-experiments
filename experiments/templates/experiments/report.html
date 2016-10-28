@@ -39,7 +39,7 @@
                                     {% trans 'Use this' %}
                                 </button>
                                 <a class="button button-small button-primary" title="{% trans 'Preview' %}"
-                                   href="{% url 'experiments:preview_for_report' variation.pk %}">
+                                   href="{% url 'experiments:preview_for_report' experiment.pk variation.pk %}">
                                     <span class="icon icon-view"></span>
                                 </a>
                             </form>

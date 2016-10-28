@@ -9,7 +9,7 @@ from wagtail.wagtailadmin import messages
 from wagtail.wagtailcore.models import Page
 
 from .models import Experiment, get_backend
-from .utils import get_user_id, percentage
+from .utils import get_user_id, impersonate_other_page, percentage
 
 
 def record_completion(request, slug):
@@ -69,10 +69,14 @@ def select_winner(request, experiment_id, variation_id):
     return redirect('experiments:report', experiment.pk)
 
 
-def preview_for_report(request, page_id):
+def preview_for_report(request, experiment_id, page_id):
+    experiment = get_object_or_404(Experiment, pk=experiment_id)
     page = get_object_or_404(Page, id=page_id).specific
     if not page.permissions_for_user(request.user).can_publish():
         raise PermissionDenied
+
+    # hack the title and page-tree-related fields to match the control page
+    impersonate_other_page(page, experiment.control_page)
 
     # pass in the real user request rather than page.dummy_request(), so that request.user
     # and request.revision_id will be picked up by the wagtail user bar

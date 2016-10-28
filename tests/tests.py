@@ -297,6 +297,9 @@ class TestAdmin(TestCase):
 
     def test_preview(self):
         response = self.client.get(
-            '/admin/experiments/experiment/report/preview/%d/' % self.homepage_alternative_1.pk
+            '/admin/experiments/experiment/report/preview/%d/%d/' % (
+                self.experiment.pk, self.homepage_alternative_1.pk
+            )
         )
         self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "<title>Home</title>")
