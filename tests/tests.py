@@ -252,7 +252,37 @@ class TestAdmin(TestCase):
             self.client.login(username='admin', password='password')
         )
         self.experiment = Experiment.objects.get(slug='homepage-text')
+        self.homepage = Page.objects.get(url_path='/home/')
         self.homepage_alternative_1 = Page.objects.get(url_path='/home/home-alternative-1/')
+        self.homepage_alternative_2 = Page.objects.get(url_path='/home/home-alternative-2/')
+
+    def get_edit_postdata(self, **kwargs):
+        alternatives = self.experiment.alternatives.all()
+
+        postdata = {
+            'name': self.experiment.name,
+            'slug': self.experiment.slug,
+            'control_page': self.experiment.control_page.pk,
+            'alternatives-TOTAL_FORMS': 2,
+            'alternatives-INITIAL_FORMS': 2,
+            'alternatives-MIN_NUM_FORMS': 0,
+            'alternatives-MAX_NUM_FORMS': 1000,
+
+            'alternatives-0-page': alternatives[0].page.pk,
+            'alternatives-0-id': alternatives[0].pk,
+            'alternatives-0-ORDER': '1',
+            'alternatives-0-DELETE': '',
+
+            'alternatives-1-page': alternatives[1].page.pk,
+            'alternatives-1-id': alternatives[1].pk,
+            'alternatives-1-ORDER': '2',
+            'alternatives-1-DELETE': '',
+
+            'goal': self.experiment.goal.pk,
+            'status': self.experiment.status,
+        }
+        postdata.update(kwargs)
+        return postdata
 
     def test_experiments_menu_item(self):
         response = self.client.get(reverse('wagtailadmin_home'))
@@ -264,9 +294,39 @@ class TestAdmin(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, 'Homepage text')
 
+    def test_experiment_new(self):
+        response = self.client.get('/admin/experiments/experiment/create/')
+        self.assertEqual(response.status_code, 200)
+
+        response = self.client.post('/admin/experiments/experiment/create/', {
+            'name': "Another experiment",
+            'slug': 'another-experiment',
+            'control_page': self.homepage_alternative_1.pk,
+            'alternatives-TOTAL_FORMS': 1,
+            'alternatives-INITIAL_FORMS': 0,
+            'alternatives-MIN_NUM_FORMS': 0,
+            'alternatives-MAX_NUM_FORMS': 1000,
+            'alternatives-0-page': self.homepage_alternative_2.pk,
+            'alternatives-0-id': '',
+            'alternatives-0-ORDER': '1',
+            'alternatives-0-DELETE': '',
+            'goal': self.homepage.pk,
+            'status': 'draft',
+        })
+        self.assertRedirects(response, '/admin/experiments/experiment/')
+        self.assertTrue(Experiment.objects.filter(slug='another-experiment').exists())
+
     def test_experiment_edit(self):
         response = self.client.get('/admin/experiments/experiment/edit/%d/' % self.experiment.pk)
         self.assertEqual(response.status_code, 200)
+
+        response = self.client.post(
+            '/admin/experiments/experiment/edit/%d/' % self.experiment.pk,
+            self.get_edit_postdata(name="Homepage text updated")
+        )
+        self.assertRedirects(response, '/admin/experiments/experiment/')
+        experiment = Experiment.objects.get(pk=self.experiment.pk)
+        self.assertEqual(experiment.name, "Homepage text updated")
 
     def test_experiment_delete(self):
         response = self.client.get('/admin/experiments/experiment/delete/%d/' % self.experiment.pk)
