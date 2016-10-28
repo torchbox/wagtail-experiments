@@ -10,5 +10,5 @@ def get_user_id(request):
 def percentage(fraction, population):
     try:
         return float(fraction) / float(population) * 100
-    except (ValueError, ZeroDivisionError):
+    except (ValueError, ZeroDivisionError, TypeError):
         return 0.0

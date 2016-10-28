@@ -22,6 +22,8 @@ SECRET_KEY = 'not needed'
 
 ROOT_URLCONF = 'tests.urls'
 
+STATIC_URL = '/static/'
+
 STATICFILES_FINDERS = (
     'django.contrib.staticfiles.finders.AppDirectoriesFinder',
 )
@@ -97,3 +99,5 @@ INSTALLED_APPS = (
 PASSWORD_HASHERS = (
     'django.contrib.auth.hashers.MD5PasswordHasher',  # don't use the intentionally slow default password hasher
 )
+
+WAGTAIL_SITE_NAME = 'wagtail-experiments test'

@@ -1,5 +1,7 @@
 from __future__ import absolute_import, unicode_literals
 
+from django.contrib.auth.models import User
+from django.core.urlresolvers import reverse
 from django.test import TestCase
 from wagtail.wagtailcore.models import Page
 
@@ -239,3 +241,62 @@ class TestFrontEndView(TestCase):
 
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "<p>Oh, it&#39;s you. What do you want?</p>")
+
+
+class TestAdmin(TestCase):
+    fixtures = ['test.json']
+
+    def setUp(self):
+        User.objects.create_superuser(username='admin', email='admin@example.com', password='password')
+        self.assertTrue(
+            self.client.login(username='admin', password='password')
+        )
+        self.experiment = Experiment.objects.get(slug='homepage-text')
+        self.homepage_alternative_1 = Page.objects.get(url_path='/home/home-alternative-1/')
+
+    def test_experiments_menu_item(self):
+        response = self.client.get(reverse('wagtailadmin_home'))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'href="/admin/experiments/experiment/"')
+
+    def test_experiments_index(self):
+        response = self.client.get('/admin/experiments/experiment/')
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'Homepage text')
+
+    def test_experiment_edit(self):
+        response = self.client.get('/admin/experiments/experiment/edit/%d/' % self.experiment.pk)
+        self.assertEqual(response.status_code, 200)
+
+    def test_experiment_delete(self):
+        response = self.client.get('/admin/experiments/experiment/delete/%d/' % self.experiment.pk)
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Are you sure you want to delete this experiment?")
+
+        response = self.client.post('/admin/experiments/experiment/delete/%d/' % self.experiment.pk)
+        self.assertRedirects(response, '/admin/experiments/experiment/')
+        self.assertFalse(Experiment.objects.filter(slug='homepage-text').exists())
+
+    def test_show_report(self):
+        response = self.client.get('/admin/experiments/experiment/report/%d/' % self.experiment.pk)
+        self.assertEqual(response.status_code, 200)
+
+    def test_select_winner(self):
+        response = self.client.post(
+            '/admin/experiments/experiment/select_winner/%d/%d/' % (
+                self.experiment.pk, self.homepage_alternative_1.pk
+            )
+        )
+        self.assertRedirects(
+            response,
+            '/admin/experiments/experiment/report/%d/' % self.experiment.pk
+        )
+        experiment = Experiment.objects.get(pk=self.experiment.pk)
+        self.assertEqual(experiment.status, 'completed')
+        self.assertEqual(experiment.winning_variation, self.homepage_alternative_1)
+
+    def test_preview(self):
+        response = self.client.get(
+            '/admin/experiments/experiment/report/preview/%d/' % self.homepage_alternative_1.pk
+        )
+        self.assertEqual(response.status_code, 200)
