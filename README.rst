@@ -1,3 +1,6 @@
+.. image:: https://api.travis-ci.org/torchbox/wagtail-experiments.svg?branch=master
+    :target: https://travis-ci.org/torchbox/wagtail-experiments
+
 .. image:: wagtail-experiments.png
 
 Wagtail Experiments
