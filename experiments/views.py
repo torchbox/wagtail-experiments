@@ -55,6 +55,8 @@ def experiment_report(request, experiment_id):
 
 
 def select_winner(request, experiment_id, variation_id):
+    if not request.user.has_perm('experiments.change_experiment'):
+        raise PermissionDenied
     experiment = get_object_or_404(Experiment, pk=experiment_id)
     variation = get_object_or_404(Page, pk=variation_id)
 
