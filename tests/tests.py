@@ -364,6 +364,34 @@ class TestAdmin(TestCase):
         homepage_alternative_1 = Page.objects.get(pk=self.homepage_alternative_1.pk).specific
         self.assertEqual(homepage_alternative_1.body, 'updated')
 
+    def test_draft_page_content_is_activated_when_creating_experiment_as_live(self):
+        # make a draft edit to homepage_alternative_1
+        self.homepage_alternative_1.body = 'updated'
+        self.homepage_alternative_1.save_revision()
+
+        # create a new experiment with an immediate live status
+        response = self.client.post('/admin/experiments/experiment/create/', {
+            'name': "Another experiment",
+            'slug': 'another-experiment',
+            'control_page': self.homepage.pk,
+            'alternatives-TOTAL_FORMS': 1,
+            'alternatives-INITIAL_FORMS': 0,
+            'alternatives-MIN_NUM_FORMS': 0,
+            'alternatives-MAX_NUM_FORMS': 1000,
+            'alternatives-0-page': self.homepage_alternative_1.pk,
+            'alternatives-0-id': '',
+            'alternatives-0-ORDER': '1',
+            'alternatives-0-DELETE': '',
+            'goal': '',
+            'status': 'live',
+        })
+
+        self.assertRedirects(response, '/admin/experiments/experiment/')
+
+        # page content should be updated to follow the draft revision now
+        homepage_alternative_1 = Page.objects.get(pk=self.homepage_alternative_1.pk).specific
+        self.assertEqual(homepage_alternative_1.body, 'updated')
+
     def test_draft_page_content_is_not_activated_on_published_pages(self):
         # publish homepage_alternative_1
         self.homepage_alternative_1.save_revision().publish()
@@ -382,6 +410,37 @@ class TestAdmin(TestCase):
             '/admin/experiments/experiment/edit/%d/' % self.experiment.pk,
             self.get_edit_postdata(status='live')
         )
+
+        # page content should still be unchanged
+        homepage_alternative_1 = Page.objects.get(pk=self.homepage_alternative_1.pk).specific
+        self.assertEqual(homepage_alternative_1.body, "Welcome to our site! It's lovely to meet you.")
+
+    def test_draft_page_content_is_not_activated_on_published_pages_when_creating_experiment_as_live(self):
+        # publish homepage_alternative_1
+        self.homepage_alternative_1.save_revision().publish()
+
+        # make a draft edit to homepage_alternative_1
+        self.homepage_alternative_1.body = 'updated'
+        self.homepage_alternative_1.save_revision()
+
+        # create a new experiment with an immediate live status
+        response = self.client.post('/admin/experiments/experiment/create/', {
+            'name': "Another experiment",
+            'slug': 'another-experiment',
+            'control_page': self.homepage.pk,
+            'alternatives-TOTAL_FORMS': 1,
+            'alternatives-INITIAL_FORMS': 0,
+            'alternatives-MIN_NUM_FORMS': 0,
+            'alternatives-MAX_NUM_FORMS': 1000,
+            'alternatives-0-page': self.homepage_alternative_1.pk,
+            'alternatives-0-id': '',
+            'alternatives-0-ORDER': '1',
+            'alternatives-0-DELETE': '',
+            'goal': '',
+            'status': 'live',
+        })
+
+        self.assertRedirects(response, '/admin/experiments/experiment/')
 
         # page content should still be unchanged
         homepage_alternative_1 = Page.objects.get(pk=self.homepage_alternative_1.pk).specific

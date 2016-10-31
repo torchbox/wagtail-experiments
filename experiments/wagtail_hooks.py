@@ -7,6 +7,7 @@ from django.utils.translation import ugettext_lazy as _
 from experiments import admin_urls
 from wagtail.contrib.modeladmin.helpers import ButtonHelper
 from wagtail.contrib.modeladmin.options import ModelAdmin, modeladmin_register
+from wagtail.contrib.modeladmin.views import CreateView, EditView
 from wagtail.wagtailcore import hooks
 
 from .models import Experiment
@@ -44,10 +45,29 @@ class ExperimentButtonHelper(ButtonHelper):
         return btns
 
 
+class CreateExperimentView(CreateView):
+    def form_valid(self, form):
+        response = super(CreateExperimentView, self).form_valid(form)
+        if form.instance.status == 'live':
+            form.instance.activate_alternative_draft_content()
+        return response
+
+
+class EditExperimentView(EditView):
+    def form_valid(self, form):
+        response = super(EditExperimentView, self).form_valid(form)
+        if self.instance._initial_status == 'draft' and self.instance.status == 'live':
+            self.instance.activate_alternative_draft_content()
+
+        return response
+
+
 class ExperimentModelAdmin(ModelAdmin):
     model = Experiment
     add_to_settings_menu = True
     button_helper_class = ExperimentButtonHelper
+    create_view_class = CreateExperimentView
+    edit_view_class = EditExperimentView
 
 modeladmin_register(ExperimentModelAdmin)
 
