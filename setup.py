@@ -4,7 +4,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='wagtail-experiments',
-    version='0.1a0',
+    version='0.1',
     description="A/B testing for Wagtail",
     author='Matthew Westcott',
     author_email='matthew.westcott@torchbox.com',
@@ -13,7 +13,7 @@ setup(
     license='BSD',
     long_description=open('README.rst').read(),
     classifiers=[
-        'Development Status :: 2 - Pre-Alpha',
+        'Development Status :: 4 - Beta',
         'Environment :: Web Environment',
         'Intended Audience :: Developers',
         'License :: OSI Approved :: BSD License',
