@@ -4,12 +4,13 @@ from setuptools import setup, find_packages
 
 setup(
     name='wagtail-experiments',
-    version='0.1',
+    version='0.1.1',
     description="A/B testing for Wagtail",
     author='Matthew Westcott',
     author_email='matthew.westcott@torchbox.com',
     url='https://github.com/torchbox/wagtail-experiments',
     packages=find_packages(),
+    include_package_data=True,
     install_requires=[
         'user-agents>=1.0,<2.0',
     ],
