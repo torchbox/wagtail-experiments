@@ -37,6 +37,9 @@ After installation, a new 'Experiments' item is added to the Wagtail admin menu 
 
 When the experiment is live, a user visiting the URL of the control page will be randomly assigned to a test group, to be served either the control page or one of the alternative variations. This assignment persists for the user's session (according to `Django's session configuration <https://docs.djangoproject.com/en/1.10/topics/http/sessions/#browser-length-sessions-vs-persistent-sessions>`_) so that each user receives the same variation each time. When a user subsequently visits the goal page, they are considered to have completed the experiment and a completion is logged against that user's test group. The completion rate over time for each test group can then be viewed through the admin interface, under 'View report'.
 
+.. image:: https://i.imgur.com/tG7JH13.png
+   :width: 728 px
+
 From the report page, an administrator can select a winning variation; the experiment status is then changed to 'completed', and all visitors to the control page are served the chosen variation.
 
 Typically, the alternative versions of the page will be left unpublished, as this prevents them from appearing as duplicate copies of the control page in the site navigation. If an unpublished page is selected as an alternative, the page revision shown to users on the front-end will be the draft revision that existed at the moment the experiment status was set to 'live'. When displaying an alternative variation, the title and tree location are overridden to appear as the control page's title and location; this means that the title of the alternative page can be set to something descriptive, such as "Signup page (blue text)", without this text 'leaking' to site visitors.
