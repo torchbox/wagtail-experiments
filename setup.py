@@ -11,9 +11,6 @@ setup(
     url='https://github.com/torchbox/wagtail-experiments',
     packages=find_packages(),
     include_package_data=True,
-    install_requires=[
-        'user-agents>=1.0,<2.0',
-    ],
     license='BSD',
     long_description=open('README.rst').read(),
     classifiers=[

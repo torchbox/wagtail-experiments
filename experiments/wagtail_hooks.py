@@ -4,13 +4,12 @@ from django.conf.urls import include, url
 from django.contrib.admin.utils import quote
 from django.core.urlresolvers import reverse
 from django.utils.translation import ugettext_lazy as _
-import user_agents
+from experiments import admin_urls
 from wagtail.contrib.modeladmin.helpers import ButtonHelper
 from wagtail.contrib.modeladmin.options import ModelAdmin, modeladmin_register
 from wagtail.contrib.modeladmin.views import CreateView, EditView
 from wagtail.wagtailcore import hooks
 
-from experiments import admin_urls
 from .models import Experiment
 from .utils import get_user_id, impersonate_other_page
 
@@ -92,13 +91,6 @@ def check_experiments(page, request, serve_args, serve_kwargs):
         if experiment.status == 'completed' and experiment.winning_variation is not None:
             variation = experiment.winning_variation
         else:
-            # always serve bots the control page
-            ua_string = request.META.get('HTTP_USER_AGENT')
-            if ua_string:
-                ua = user_agents.parse(ua_string)
-                if ua.is_bot:
-                    return
-
             user_id = get_user_id(request)
             variation = experiment.start_experiment_for_user(user_id, request)
 

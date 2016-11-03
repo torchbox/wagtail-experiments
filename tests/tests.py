@@ -51,27 +51,6 @@ class TestFrontEndView(TestCase):
             self.assertEqual(response.status_code, 200)
             self.assertContains(response, '<p>Welcome to our site! It&#39;s lovely to meet you.</p>')
 
-    def test_bot_user_agent_gets_control_page(self):
-        session = self.client.session
-
-        # non-bot user agent string
-        for x in range(0, 5):
-            session.clear()
-            session['experiment_user_id'] = '33333333-3333-3333-3333-333333333333'
-            session.save()
-            response = self.client.get('/', HTTP_USER_AGENT="Mozilla/5.0 (Windows NT 6.1; Win64; x64; rv:47.0) Gecko/20100101 Firefox/47.0")
-            self.assertEqual(response.status_code, 200)
-            self.assertContains(response, '<p>Welcome to our site! It&#39;s lovely to meet you.</p>')
-
-        # bot user agent string
-        for x in range(0, 5):
-            session.clear()
-            session['experiment_user_id'] = '33333333-3333-3333-3333-333333333333'
-            session.save()
-            response = self.client.get('/', HTTP_USER_AGENT="Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)")
-            self.assertEqual(response.status_code, 200)
-            self.assertContains(response, '<p>Welcome to our site!</p>')
-
     def test_participant_is_logged(self):
         # initially there should be no experiment history
         self.assertEqual(ExperimentHistory.objects.filter(experiment=self.experiment).count(), 0)
