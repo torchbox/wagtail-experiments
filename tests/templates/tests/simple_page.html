@@ -11,5 +11,16 @@
             {% endfor %}
         </ul>
         <p>{{ page.body }}</p>
+
+        {% with page.related_links.all as related_links %}
+            {% if related_links %}
+                <h2>Related links</h2>
+                <ul>
+                    {% for link in related_links %}
+                        <li><a href="{{ link.url }}">{{ link.link_text }}</a></li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+        {% endwith %}
     </body>
 </html>

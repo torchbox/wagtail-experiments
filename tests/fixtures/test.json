@@ -40,6 +40,15 @@
         "body": "Welcome to our site!"
     }
 },
+{
+    "pk": 1,
+    "model": "tests.simplepagerelatedlink",
+    "fields": {
+        "page": 2,
+        "link_text": "a boring link",
+        "url": "http://boring.example.com/"
+    }
+},
 
 {
     "pk": 3,
@@ -63,6 +72,15 @@
         "body": "Welcome to our site! It's lovely to meet you."
     }
 },
+{
+    "pk": 2,
+    "model": "tests.simplepagerelatedlink",
+    "fields": {
+        "page": 3,
+        "link_text": "a lovely link",
+        "url": "http://lovely.example.com/"
+    }
+},
 
 {
     "pk": 4,
@@ -84,6 +102,15 @@
     "model": "tests.simplepage",
     "fields": {
         "body": "Oh, it's you. What do you want?"
+    }
+},
+{
+    "pk": 3,
+    "model": "tests.simplepagerelatedlink",
+    "fields": {
+        "page": 4,
+        "link_text": "an angry link",
+        "url": "http://angry.example.com/"
     }
 },
 
