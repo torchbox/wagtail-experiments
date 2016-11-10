@@ -4,7 +4,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='wagtail-experiments',
-    version='0.1.1',
+    version='0.1.2',
     description="A/B testing for Wagtail",
     author='Matthew Westcott',
     author_email='matthew.westcott@torchbox.com',

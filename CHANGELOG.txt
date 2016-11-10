@@ -1,7 +1,7 @@
 Changelog
 =========
 
-0.1.2 (xx.xx.xxxx)
+0.1.2 (10.11.2016)
 ~~~~~~~~~~~~~~~~~~
 
  * Remove detection of bots by user-agent, as this directly contravenes Google's guidelines
