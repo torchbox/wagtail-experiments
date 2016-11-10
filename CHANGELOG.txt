@@ -6,6 +6,7 @@ Changelog
 
  * Remove detection of bots by user-agent, as this directly contravenes Google's guidelines
    (https://webmasters.googleblog.com/2012/08/website-testing-google-search.html)
+ * Fix: Page ID is no longer switched when rendering alternative pages, so that the correct inline child objects are displayed
 
 
 0.1.1 (01.11.2016)

@@ -41,6 +41,7 @@ class TestFrontEndView(TestCase):
             response = self.client.get('/')
             self.assertEqual(response.status_code, 200)
             self.assertContains(response, '<p>Welcome to our site!</p>')
+            self.assertContains(response, '<a href="http://boring.example.com/">a boring link</a>')
 
         session.clear()
         session['experiment_user_id'] = '33333333-3333-3333-3333-333333333333'
@@ -50,6 +51,7 @@ class TestFrontEndView(TestCase):
             response = self.client.get('/')
             self.assertEqual(response.status_code, 200)
             self.assertContains(response, '<p>Welcome to our site! It&#39;s lovely to meet you.</p>')
+            self.assertContains(response, '<a href="http://lovely.example.com/">a lovely link</a>')
 
     def test_participant_is_logged(self):
         # initially there should be no experiment history
@@ -197,6 +199,7 @@ class TestFrontEndView(TestCase):
         # but should get the standard homepage when it's draft
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, '<p>Welcome to our site!</p>')
+        self.assertContains(response, '<a href="http://boring.example.com/">a boring link</a>')
 
         # no participant record should be logged
         self.assertEqual(ExperimentHistory.objects.filter(experiment=self.experiment).count(), 0)

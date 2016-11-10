@@ -16,8 +16,6 @@ def percentage(fraction, population):
 
 def impersonate_other_page(page, other):
     """Modify the title and tree location data of `page` to resemble `other`"""
-    page.id = other.id
-    page.pk = other.pk
     page.path = other.path
     page.depth = other.depth
     page.url_path = other.url_path
