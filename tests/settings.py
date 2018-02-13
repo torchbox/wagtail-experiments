@@ -59,6 +59,7 @@ if django.VERSION >= (1, 10):
         'django.middleware.clickjacking.XFrameOptionsMiddleware',
 
         'wagtail.wagtailcore.middleware.SiteMiddleware',
+        'experiments.middleware.GoalURLMiddleware',
     )
 else:
     MIDDLEWARE_CLASSES = (
