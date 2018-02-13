@@ -1,4 +1,7 @@
-from django.utils.deprecation import MiddlewareMixin
+try:
+    from django.utils.deprecation import MiddlewareMixin
+except ImportError:
+    MiddlewareMixin = object
 
 from . models import Experiment
 from .utils import get_user_id
