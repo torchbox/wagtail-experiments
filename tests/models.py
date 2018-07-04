@@ -3,7 +3,11 @@ from __future__ import absolute_import, unicode_literals
 from django.db import models
 
 from modelcluster.fields import ParentalKey
-from wagtail.wagtailcore.models import Page, Orderable
+
+try:
+    from wagtail.core.models import Page, Orderable
+except ImportError:  # fallback for Wagtail <2.0
+    from wagtail.wagtailcore.models import Page, Orderable
 
 
 class SimplePage(Page):

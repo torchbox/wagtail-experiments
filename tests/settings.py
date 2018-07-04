@@ -3,6 +3,8 @@ from __future__ import absolute_import, unicode_literals
 import os
 import django
 
+from wagtail import VERSION as WAGTAIL_VERSION
+
 DATABASES = {
     'default': {
         'ENGINE': os.environ.get('DATABASE_ENGINE', 'django.db.backends.sqlite3'),
@@ -49,7 +51,7 @@ TEMPLATES = [
 ]
 
 if django.VERSION >= (1, 10):
-    MIDDLEWARE = (
+    MIDDLEWARE = [
         'django.middleware.common.CommonMiddleware',
         'django.contrib.sessions.middleware.SessionMiddleware',
         'django.middleware.csrf.CsrfViewMiddleware',
@@ -57,9 +59,13 @@ if django.VERSION >= (1, 10):
         'django.contrib.auth.middleware.SessionAuthenticationMiddleware',
         'django.contrib.messages.middleware.MessageMiddleware',
         'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    ]
 
-        'wagtail.wagtailcore.middleware.SiteMiddleware',
-    )
+    if WAGTAIL_VERSION < (2, 0):
+        MIDDLEWARE.append('wagtail.wagtailcore.middleware.SiteMiddleware')
+    else:
+        MIDDLEWARE.append('wagtail.core.middleware.SiteMiddleware')
+
 else:
     MIDDLEWARE_CLASSES = (
         'django.middleware.common.CommonMiddleware',
@@ -73,28 +79,52 @@ else:
         'wagtail.wagtailcore.middleware.SiteMiddleware',
     )
 
-INSTALLED_APPS = (
-    'experiments',
-    'tests',
+if WAGTAIL_VERSION < (2, 0):
+    INSTALLED_APPS = (
+        'experiments',
+        'tests',
 
-    'wagtail.contrib.modeladmin',
-    'wagtail.wagtailsearch',
-    'wagtail.wagtailsites',
-    'wagtail.wagtailusers',
-    'wagtail.wagtailimages',
-    'wagtail.wagtaildocs',
-    'wagtail.wagtailadmin',
-    'wagtail.wagtailcore',
+        'wagtail.contrib.modeladmin',
+        'wagtail.wagtailsearch',
+        'wagtail.wagtailsites',
+        'wagtail.wagtailusers',
+        'wagtail.wagtailimages',
+        'wagtail.wagtaildocs',
+        'wagtail.wagtailadmin',
+        'wagtail.wagtailcore',
 
-    'taggit',
+        'taggit',
 
-    'django.contrib.admin',
-    'django.contrib.auth',
-    'django.contrib.contenttypes',
-    'django.contrib.sessions',
-    'django.contrib.messages',
-    'django.contrib.staticfiles',
-)
+        'django.contrib.admin',
+        'django.contrib.auth',
+        'django.contrib.contenttypes',
+        'django.contrib.sessions',
+        'django.contrib.messages',
+        'django.contrib.staticfiles',
+    )
+else:
+    INSTALLED_APPS = (
+        'experiments',
+        'tests',
+
+        'wagtail.contrib.modeladmin',
+        'wagtail.search',
+        'wagtail.sites',
+        'wagtail.users',
+        'wagtail.images',
+        'wagtail.documents',
+        'wagtail.admin',
+        'wagtail.core',
+
+        'taggit',
+
+        'django.contrib.admin',
+        'django.contrib.auth',
+        'django.contrib.contenttypes',
+        'django.contrib.sessions',
+        'django.contrib.messages',
+        'django.contrib.staticfiles',
+    )
 
 PASSWORD_HASHERS = (
     'django.contrib.auth.hashers.MD5PasswordHasher',  # don't use the intentionally slow default password hasher
