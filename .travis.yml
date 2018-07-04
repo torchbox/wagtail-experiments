@@ -14,7 +14,7 @@ matrix:
      python: 2.7
    - env: TOXENV=py27-dj110-wt110
      python: 2.7
-   - env: TOXENV=py27-dj10-wt111
+   - env: TOXENV=py27-dj110-wt111
      python: 2.7
    - env: TOXENV=py27-dj111-wt112
      python: 2.7
