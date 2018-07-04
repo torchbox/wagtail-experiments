@@ -19,8 +19,8 @@ class Migration(migrations.Migration):
                 ('date', models.DateField()),
                 ('participant_count', models.PositiveIntegerField(default=0)),
                 ('completion_count', models.PositiveIntegerField(default=0)),
-                ('experiment', models.ForeignKey(to='experiments.Experiment', related_name='history')),
-                ('variation', models.ForeignKey(to='wagtailcore.Page', related_name='+')),
+                ('experiment', models.ForeignKey(to='experiments.Experiment', related_name='history', on_delete=models.CASCADE)),
+                ('variation', models.ForeignKey(to='wagtailcore.Page', related_name='+', on_delete=models.CASCADE)),
             ],
         ),
         migrations.AlterUniqueTogether(
