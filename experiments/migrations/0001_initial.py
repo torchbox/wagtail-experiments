@@ -29,8 +29,8 @@ class Migration(migrations.Migration):
                 ('id', models.AutoField(primary_key=True, auto_created=True, verbose_name='ID', serialize=False)),
                 ('name', models.CharField(max_length=255)),
                 ('slug', models.SlugField(max_length=255)),
-                ('control_page', models.ForeignKey(related_name='+', to='wagtailcore.Page')),
-                ('goal', models.ForeignKey(related_name='+', to='wagtailcore.Page')),
+                ('control_page', models.ForeignKey(related_name='+', to='wagtailcore.Page', on_delete=models.CASCADE)),
+                ('goal', models.ForeignKey(related_name='+', to='wagtailcore.Page', on_delete=models.SET_NULL)),
             ],
             options={
                 'abstract': False,
@@ -39,11 +39,11 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='alternative',
             name='experiment',
-            field=modelcluster.fields.ParentalKey(related_name='alternatives', to='experiments.Experiment'),
+            field=modelcluster.fields.ParentalKey(related_name='alternatives', to='experiments.Experiment', on_delete=models.CASCADE),
         ),
         migrations.AddField(
             model_name='alternative',
             name='page',
-            field=models.ForeignKey(related_name='+', to='wagtailcore.Page'),
+            field=models.ForeignKey(related_name='+', to='wagtailcore.Page', on_delete=models.CASCADE),
         ),
     ]

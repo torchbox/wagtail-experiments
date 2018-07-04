@@ -1,7 +1,12 @@
 from __future__ import absolute_import, unicode_literals
 
 from django.contrib.auth.models import User
-from django.core.urlresolvers import reverse
+
+try:
+    from django.urls import reverse
+except ImportError:  # fallback for Django <=1.9
+    from django.core.urlresolvers import reverse
+
 from django.test import TestCase
 
 try:
