@@ -8,7 +8,11 @@ from experiments import admin_urls
 from wagtail.contrib.modeladmin.helpers import ButtonHelper
 from wagtail.contrib.modeladmin.options import ModelAdmin, modeladmin_register
 from wagtail.contrib.modeladmin.views import CreateView, EditView
-from wagtail.wagtailcore import hooks
+
+try:
+    from wagtail.core import hooks
+except ImportError:  # fallback for Wagtail <2.0
+    from wagtail.wagtailcore import hooks
 
 from .models import Experiment
 from .utils import get_user_id, impersonate_other_page

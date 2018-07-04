@@ -2,8 +2,12 @@ from __future__ import absolute_import, unicode_literals
 
 from django.conf.urls import include, url
 
-from wagtail.wagtailadmin import urls as wagtailadmin_urls
-from wagtail.wagtailcore import urls as wagtail_urls
+try:
+    from wagtail.admin import urls as wagtailadmin_urls
+    from wagtail.core import urls as wagtail_urls
+except ImportError:  # fallback for Wagtail <2.0
+    from wagtail.wagtailadmin import urls as wagtailadmin_urls
+    from wagtail.wagtailcore import urls as wagtail_urls
 
 from experiments import views as experiment_views
 
