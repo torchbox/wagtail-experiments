@@ -1,9 +1,9 @@
 from __future__ import absolute_import, unicode_literals
 
 from django.contrib.auth.models import User
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.test import TestCase
-from wagtail.wagtailcore.models import Page
+from wagtail.core.models import Page
 
 from experiments.models import Experiment, ExperimentHistory
 
