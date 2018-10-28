@@ -1,0 +1,5 @@
+include LICENSE
+include README.rst
+include CHANGELOG.txt
+recursive-include experiments/static *
+recursive-include experiments/templates *

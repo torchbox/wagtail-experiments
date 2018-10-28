@@ -1,9 +1,9 @@
 from __future__ import absolute_import, unicode_literals
 
 from django.contrib.auth.models import User
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.test import TestCase
-from wagtail.wagtailcore.models import Page
+from wagtail.core.models import Page
 
 from experiments.models import Experiment, ExperimentHistory
 
@@ -170,6 +170,43 @@ class TestFrontEndView(TestCase):
 
         # repeated completions from the same user should not update the count
         self.client.get('/experiments/complete/homepage-text/')
+        history_record = ExperimentHistory.objects.get(
+            experiment=self.experiment, variation=self.homepage
+        )
+        self.assertEqual(history_record.participant_count, 1)
+        self.assertEqual(history_record.completion_count, 1)
+
+    def test_completion_is_logged_for_url_outside_wagtail(self):
+        # Remove the goal page and add a URL that doesn't map to a page instead
+        success_url = '/success-url-1/'
+        self.experiment.goal = None
+        self.experiment.goal_url = success_url  # no Page maps to this url
+        self.experiment.save()
+        self.assertEqual(Page.objects.filter(slug=success_url).count(), 0)
+        # User 11111111-1111-1111-1111-111111111111
+        session = self.client.session
+        session['experiment_user_id'] = '11111111-1111-1111-1111-111111111111'
+        session.save()
+        self.client.get('/')
+
+        # history record should show 1 participant, 0 completions
+        history_record = ExperimentHistory.objects.get(
+            experiment=self.experiment, variation=self.homepage
+        )
+        self.assertEqual(history_record.participant_count, 1)
+        self.assertEqual(history_record.completion_count, 0)
+
+        self.client.get(success_url)
+
+        # history record should show 1 participant, 1 completion
+        history_record = ExperimentHistory.objects.get(
+            experiment=self.experiment, variation=self.homepage
+        )
+        self.assertEqual(history_record.participant_count, 1)
+        self.assertEqual(history_record.completion_count, 1)
+
+        # repeated completions from the same user should not update the count
+        self.client.get(success_url)
         history_record = ExperimentHistory.objects.get(
             experiment=self.experiment, variation=self.homepage
         )

@@ -9,8 +9,8 @@ from django.utils.encoding import python_2_unicode_compatible
 
 from modelcluster.fields import ParentalKey
 from modelcluster.models import ClusterableModel
-from wagtail.wagtailadmin.edit_handlers import FieldPanel, PageChooserPanel, InlinePanel
-from wagtail.wagtailcore.models import Orderable
+from wagtail.admin.edit_handlers import FieldPanel, PageChooserPanel, InlinePanel
+from wagtail.core.models import Orderable
 
 
 BACKEND = None
@@ -36,7 +36,8 @@ class Experiment(ClusterableModel):
     slug = models.SlugField(max_length=255)
     control_page = models.ForeignKey('wagtailcore.Page', related_name='+', on_delete=models.CASCADE)
     goal = models.ForeignKey('wagtailcore.Page', related_name='+', on_delete=models.SET_NULL, null=True, blank=True)
-    status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='draft')
+    goal_url = models.CharField(max_length=255, blank=True, default='')
+    status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='draft', db_index=True)
     winning_variation = models.ForeignKey('wagtailcore.Page', related_name='+', on_delete=models.SET_NULL, null=True)
 
     panels = [
@@ -45,6 +46,7 @@ class Experiment(ClusterableModel):
         PageChooserPanel('control_page'),
         InlinePanel('alternatives', label="Alternatives"),
         PageChooserPanel('goal'),
+        FieldPanel('goal_url'),
         FieldPanel('status'),
     ]
 
