@@ -1,9 +1,6 @@
 language: python
 cache: pip
 
-# Use container-based infrastructure
-sudo: false
-
 matrix:
   include:
    - env: TOXENV=py27-dj18-wt17
@@ -27,6 +24,10 @@ matrix:
    - env: TOXENV=py35-dj20-wt20
      python: 3.5
    - env: TOXENV=py36-dj20-wt21
+     python: 3.6
+   - env: TOXENV=py36-dj20-wt22
+     python: 3.6
+   - env: TOXENV=py36-dj21-wt23
      python: 3.6
 
 # Package installation
