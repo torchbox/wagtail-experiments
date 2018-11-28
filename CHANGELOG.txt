@@ -1,6 +1,12 @@
 Changelog
 =========
 
+0.2.0 (xx.xx.xxxx)
+~~~~~~~~~~~~~~~~~~
+
+ * Add support for Wagtail 1.8 - 2.3 and Django 1.11 - 2.1
+
+
 0.1.2 (10.11.2016)
 ~~~~~~~~~~~~~~~~~~
 
