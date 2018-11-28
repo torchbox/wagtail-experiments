@@ -106,3 +106,17 @@ Returns report data for ``experiment``, consisting of a dict containing:
 
   ``history``
     A list of dicts showing the breakdown of participants and completions over time; each dict contains ``date``, ``participant_count`` and ``completion_count``.
+
+
+Test data
+---------
+
+wagtail-experiments provides a management command ``experiment-data``, to allow populating an experiment with dummy data for testing or demonstration purposes, and purging existing data. This command is called with the experiment's slug::
+
+    # Populate the experiment 'homepage-banner' with 5 days of test data,
+    # with 100-200 views per variation. All parameters other than experiment slug
+    # are optional
+    ./manage.py experiment-data homepage-banner --days 5 --min=100 --max=200
+
+    # Purge data for the experiment 'homepage-banner'
+    ./manage.py experiment-data homepage-banner --purge
