@@ -29,6 +29,9 @@ and ensure that the apps ``wagtail.contrib.modeladmin`` and ``experiments`` are 
         # ...
     ]
 
+Then migrate:: 
+
+    ./manage.py migrate
 
 Usage
 -----
