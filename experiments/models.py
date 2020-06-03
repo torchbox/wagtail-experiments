@@ -5,7 +5,12 @@ from importlib import import_module
 
 from django.conf import settings
 from django.db import models
-from django.utils.encoding import python_2_unicode_compatible
+
+try:
+    from django.utils.encoding import python_2_unicode_compatible
+except ImportError:
+    def python_2_unicode_compatible(aleluya):
+        return aleluya
 
 from modelcluster.fields import ParentalKey
 from modelcluster.models import ClusterableModel
