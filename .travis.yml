@@ -29,6 +29,8 @@ matrix:
      python: 3.6
    - env: TOXENV=py36-dj21-wt23
      python: 3.6
+   - env: TOXENV=py36-dj31-wt210
+     python: 3.6
 
 # Package installation
 install:
