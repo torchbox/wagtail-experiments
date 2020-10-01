@@ -5,7 +5,6 @@ from importlib import import_module
 
 from django.conf import settings
 from django.db import models
-from django.utils.encoding import python_2_unicode_compatible
 
 from modelcluster.fields import ParentalKey
 from modelcluster.models import ClusterableModel
@@ -30,7 +29,6 @@ def get_backend():
     return BACKEND
 
 
-@python_2_unicode_compatible
 class Experiment(ClusterableModel):
     STATUS_CHOICES = [
         ('draft', "Draft"),

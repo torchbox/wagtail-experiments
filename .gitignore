@@ -2,3 +2,5 @@
 /.tox/
 /dist/
 /wagtail_experiments.egg-info/
+/env/
+/bin/

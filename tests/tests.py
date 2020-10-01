@@ -59,7 +59,7 @@ class TestFrontEndView(TestCase):
         for x in range(0, 5):
             response = self.client.get('/')
             self.assertEqual(response.status_code, 200)
-            self.assertContains(response, '<p>Welcome to our site! It&#39;s lovely to meet you.</p>')
+            self.assertContains(response, "<p>Welcome to our site! It&#39;s lovely to meet you.</p>", html=True)
             self.assertContains(response, '<a href="http://lovely.example.com/">a lovely link</a>')
 
     def test_participant_is_logged(self):
@@ -252,7 +252,7 @@ class TestFrontEndView(TestCase):
         response = self.client.get('/')
 
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, "<p>Oh, it&#39;s you. What do you want?</p>")
+        self.assertContains(response, "<p>Oh, it&#39;s you. What do you want?</p>", html=True)
 
 
 class TestAdmin(TestCase):
