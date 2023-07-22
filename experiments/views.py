@@ -1,22 +1,29 @@
-from __future__ import absolute_import, unicode_literals
-
 from django.core.exceptions import PermissionDenied
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
-from django.utils.translation import ugettext as _
+from django.utils.translation import gettext as _
 
 try:
     from wagtail.admin import messages
+    from wagtail.models import Page
+except ImportError:  # fallback for Wagtail <5.0
     from wagtail.core.models import Page
-except ImportError:  # fallback for Wagtail <2.0
-    from wagtail.wagtailadmin import messages
-    from wagtail.wagtailcore.models import Page
 
 from .models import Experiment, get_backend
 from .utils import get_user_id, impersonate_other_page, percentage
 
 
 def record_completion(request, slug):
+    '''
+        Record the completion of the experiment for the user.
+
+        Args:
+            request: django HttpRequest.
+            slug:    the experiment's slug.
+
+        Return:
+            OK as the HttpResponse
+    '''
     experiment = get_object_or_404(Experiment, slug=slug)
     user_id = get_user_id(request)
 
@@ -25,7 +32,17 @@ def record_completion(request, slug):
 
 
 def experiment_report(request, experiment_id):
-    # TODO: Decide if we need a custom permission to access reports
+    '''
+        Generate a report for the experiment.
+
+        Args:
+            request: django HttpRequest.
+            experiment_id: the primary key for the experiment.
+
+        Return:
+            The experiment's report in rendered HTML using
+            the experiments/report.html for formatting.
+    '''
 
     backend = get_backend()
     experiment = get_object_or_404(Experiment, pk=experiment_id)
@@ -59,6 +76,21 @@ def experiment_report(request, experiment_id):
 
 
 def select_winner(request, experiment_id, variation_id):
+    '''
+        Record the winner for the experiment if user has permission
+        to change the experiment.
+
+        Args:
+            request: django HttpRequest.
+            experiment_id: the primary key for the experiment.
+            variation_id: the primary key for the variation.
+
+        Return:
+            If request is a POST and the user has permission to change experiment,
+            then redirect to generate a report.
+
+            If request is not a POST, then return nothing.
+    '''
     if not request.user.has_perm('experiments.change_experiment'):
         raise PermissionDenied
     experiment = get_object_or_404(Experiment, pk=experiment_id)
@@ -74,14 +106,24 @@ def select_winner(request, experiment_id, variation_id):
 
     return redirect('experiments:report', experiment.pk)
 
-
 def preview_for_report(request, experiment_id, page_id):
+    '''
+        Preview a report if the user has permission to publish.
+
+        Args:
+            request:       django HttpRequest.
+            experiment_id: the primary key for the experiment.
+            page_id:       the primary key for the page.
+
+        Return:
+            The rendered page by wagtail.
+    '''
     experiment = get_object_or_404(Experiment, pk=experiment_id)
     page = get_object_or_404(Page, id=page_id).specific
     if not page.permissions_for_user(request.user).can_publish():
         raise PermissionDenied
 
-    # hack the title and page-tree-related fields to match the control page
+    # hack the page-tree-related fields to match the control page
     impersonate_other_page(page, experiment.control_page)
 
     # pass in the real user request rather than page.dummy_request(), so that request.user
