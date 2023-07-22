@@ -1,6 +1,14 @@
 Changelog
 =========
 
+0.9 (2023-07-09)
+~~~~~~~~~~~~~~~~
+
+ * Added support for Wagtail 2.4 thru 5.0
+ * Added support for Django 2.2 thru 4.2
+ * Support internationalization for models
+ * Other improvements such as docstrings etc.
+
 0.2 (28.11.2018)
 ~~~~~~~~~~~~~~~~
 
