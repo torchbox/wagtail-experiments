@@ -1,5 +1,5 @@
 {% extends "wagtailadmin/base.html" %}
-{% load i18n staticfiles %}
+{% load i18n static %}
 {% block titletag %}{% trans "Experiment results" %}{% endblock %}
 
 
@@ -76,7 +76,7 @@
 
                             ['{{ variation.title|escapejs }}',
                                 {% for history_entry in variation_report.history %}
-                                    '{{ history_entry.conversion_rate|floatformat:2|escapejs }}'{% if not forloop.last %},{% endif %}
+                                    '{{ history_entry.conversion_rate|stringformat:".2f"|escapejs }}'{% if not forloop.last %},{% endif %}
                                 {% endfor %}
                             ]{% if not forloop.last %},{% endif %}
                         {% endfor %}
