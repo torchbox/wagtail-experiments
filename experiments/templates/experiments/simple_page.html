@@ -1,0 +1,26 @@
+<!DOCTYPE HTML>
+<html>
+    <head>
+        <title>{{ page.title }}</title>
+    </head>
+    <body>
+        <h1>{{ page.title }}</h1>
+        <ul class="breadcrumb">
+            {% for p in breadcrumb %}
+                <li {% if p.url_path == page.url_path %}class="current"{% endif %}>{{ p.title }}</li>
+            {% endfor %}
+        </ul>
+        <p>{{ page.body }}</p>
+
+        {% with page.related_links.all as related_links %}
+            {% if related_links %}
+                <h2>Related links</h2>
+                <ul>
+                    {% for link in related_links %}
+                        <li><a href="{{ link.url }}">{{ link.link_text }}</a></li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+        {% endwith %}
+    </body>
+</html>
