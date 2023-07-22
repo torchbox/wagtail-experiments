@@ -1,23 +1,13 @@
-from __future__ import absolute_import, unicode_literals
-
-from django.conf.urls import include, url
+from django.urls import include, re_path
 from django.contrib.admin.utils import quote
+from django.urls import reverse
 
-try:
-    from django.urls import reverse
-except ImportError:  # fallback for Django <=1.9
-    from django.core.urlresolvers import reverse
-
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 from experiments import admin_urls
 from wagtail.contrib.modeladmin.helpers import ButtonHelper
 from wagtail.contrib.modeladmin.options import ModelAdmin, modeladmin_register
 from wagtail.contrib.modeladmin.views import CreateView, EditView
-
-try:
-    from wagtail.core import hooks
-except ImportError:  # fallback for Wagtail <2.0
-    from wagtail.wagtailcore import hooks
+from wagtail import hooks
 
 from .models import Experiment
 from .utils import get_user_id, impersonate_other_page
@@ -26,12 +16,27 @@ from .utils import get_user_id, impersonate_other_page
 @hooks.register('register_admin_urls')
 def register_admin_urls():
     return [
-        url(r'^experiments/', include(admin_urls, namespace='experiments')),
+        re_path(r'^experiments/', include(admin_urls, namespace='experiments')),
     ]
 
 
 class ExperimentButtonHelper(ButtonHelper):
+    '''
+        Define the helper button for an experiment.
+    '''
     def report_button(self, pk, classnames_add=[], classnames_exclude=[]):
+        '''
+            Get the report button.
+
+            Args:
+                self:                instance of the class ExperimentButtonHelper
+                pk:                  the primary key for the experiment.
+                classnames_add:      a list of classnames to include; defaults to empty list.
+                classnames_exclude:  a list of to exclude; defaults to empty list.
+
+            Return:
+                A list of url paths for experiments.
+        '''
         classnames = classnames_add
         cn = self.finalise_classname(classnames, classnames_exclude)
         return {
@@ -43,6 +48,19 @@ class ExperimentButtonHelper(ButtonHelper):
 
     def get_buttons_for_obj(self, obj, exclude=[], classnames_add=[],
                             classnames_exclude=[]):
+        '''
+            Get the wagtail button to generate a report.
+
+            Args:
+                self:                instance of the class ExperimentButtonHelper
+                obj:                 the primary key for the experiment.
+                exclude:             a list to exclude inspect, edit, and/or delete; defaults to empty list.
+                classnames_add:      a list of classnames to include; defaults to empty list.
+                classnames_exclude:  a list of to exclude; defaults to empty list.
+
+            Return:
+                A list of url paths for experiments.
+        '''
         ph = self.permission_helper
         pk = quote(getattr(obj, self.opts.pk.attname))
         btns = super(ExperimentButtonHelper, self).get_buttons_for_obj(obj, exclude, classnames_add, classnames_exclude)
@@ -55,7 +73,21 @@ class ExperimentButtonHelper(ButtonHelper):
 
 
 class CreateExperimentView(CreateView):
+    '''
+        Define the Create view for an experiment.
+    '''
     def form_valid(self, form):
+        '''
+            Check the form is valid. If the form's status is "live",
+            then the alternative draft content is activated.
+
+            Args:
+                self:  instance of the class CreateExperimentView
+                form:  form to validate.
+
+            Return:
+                A django HttpResponse whether the form is valid.
+        '''
         response = super(CreateExperimentView, self).form_valid(form)
         if form.instance.status == 'live':
             form.instance.activate_alternative_draft_content()
@@ -63,7 +95,21 @@ class CreateExperimentView(CreateView):
 
 
 class EditExperimentView(EditView):
+    '''
+        Define the Edit view for an experiment.
+    '''
     def form_valid(self, form):
+        '''
+            Check the form is valid. If the form's status is "live",
+            then the alternative draft content is activated.
+
+            Args:
+                self:  instance of the class CreateExperimentView
+                form:  form to validate.
+
+            Return:
+                A django HttpResponse whether the form is valid.
+        '''
         response = super(EditExperimentView, self).form_valid(form)
         if self.instance._initial_status == 'draft' and self.instance.status == 'live':
             self.instance.activate_alternative_draft_content()
@@ -72,6 +118,9 @@ class EditExperimentView(EditView):
 
 
 class ExperimentModelAdmin(ModelAdmin):
+    '''
+        Define the admin model for an Experiment.
+    '''
     model = Experiment
     add_to_settings_menu = True
     button_helper_class = ExperimentButtonHelper
@@ -83,6 +132,23 @@ modeladmin_register(ExperimentModelAdmin)
 
 @hooks.register('before_serve_page')
 def check_experiments(page, request, serve_args, serve_kwargs):
+    '''
+        Check whether the page is a control or goal of an experiment.
+        If the page is a control page, run the experiment.
+        If the page is a goal page, log a completion.
+
+        Args:
+            page:          page being served.
+            request:       django HttpRequest.
+            serve_args:    non-keyword arguments for page being served.
+            serve_kwargs:  keyword arguments for the page being served
+
+        Return:
+            If the page is a control page in a live, yet uncompleted, experiment
+            and the variation page for this user is not the same as the page,
+            then show the variation page. Otherwise, return nothing.
+    '''
+
     # If the page being served is the goal page of an experiment, log a completion
     completed_experiments = Experiment.objects.filter(goal=page, status='live')
 
@@ -108,7 +174,7 @@ def check_experiments(page, request, serve_args, serve_kwargs):
 
             variation = variation.specific
 
-            # hack the title and page-tree-related fields to match the control page
+            # hack the page-tree-related fields to match the control page
             impersonate_other_page(variation, page)
 
             return variation.serve(request, *serve_args, **serve_kwargs)

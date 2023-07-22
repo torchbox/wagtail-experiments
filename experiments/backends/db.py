@@ -1,13 +1,24 @@
-from __future__ import absolute_import, unicode_literals
-
 import datetime
-
 from django.db.models import F, Sum
 
 from experiments.models import ExperimentHistory
 
 
 def record_participant(experiment, user_id, variation, request):
+    '''
+        If the user hasn't already participated in this experiment,
+        then save the variation the user viewed.
+
+        Args:
+            experiment: instance of experiments.models.Experiment
+            user_id:    the id for this user.
+            variation:  variation user viewed.
+            request:    django HttpRequest.
+
+        Return:
+            Nothing
+    '''
+
     # abort if this user has participated already
     experiments_started = request.session.get('experiments_started', [])
     if experiment.id in experiments_started:
@@ -23,8 +34,21 @@ def record_participant(experiment, user_id, variation, request):
     # increment the participant_count
     ExperimentHistory.objects.filter(pk=history.pk).update(participant_count=F('participant_count') + 1)
 
-
 def record_completion(experiment, user_id, variation, request):
+    '''
+        If the user has started this experiment, but not completed it yet,
+        then mark the user's participation as completed.
+
+        Args:
+            experiment: instance of experiments.models.Experiment
+            user_id:   the id for this user.
+            variation: variation user viewed.
+            request:   django HttpRequest.
+
+        Return:
+            Nothing
+    '''
+
     # abort if this user never started the experiment
     if experiment.id not in request.session.get('experiments_started', []):
         return
@@ -46,6 +70,16 @@ def record_completion(experiment, user_id, variation, request):
 
 
 def get_report(experiment):
+    '''
+        Generate a report about the experiment's results.
+
+        Args:
+            experiment: instance of experiments.models.Experiment
+
+        Return:
+            A report of experiment results as a dictionary.
+    '''
+
     result = {}
     result.setdefault('variations', [])
 
