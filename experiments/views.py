@@ -1,5 +1,3 @@
-from __future__ import absolute_import, unicode_literals
-
 from django.core.exceptions import PermissionDenied
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
@@ -9,15 +7,10 @@ try:
     from wagtail.admin import messages
     from wagtail.models import Page
 except ImportError:  # fallback for Wagtail <5.0
-    try:
-        from wagtail.core.models import Page
-    except ImportError:  # fallback for Wagtail <2.0
-        from wagtail.wagtailadmin import messages
-        from wagtail.wagtailcore.models import Page
+    from wagtail.core.models import Page
 
 from .models import Experiment, get_backend
 from .utils import get_user_id, impersonate_other_page, percentage, use_control_title
-
 
 def record_completion(request, slug):
     '''
