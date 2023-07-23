@@ -1,24 +1,16 @@
-from __future__ import absolute_import, unicode_literals
-
-from django.contrib.auth.models import User
 from django.test import TestCase
 from unittest import skipIf
 
-try:
-    from django.urls import reverse
-except ImportError:  # fallback for Django <=1.9
-    from django.core.urlresolvers import reverse
+from django.urls import reverse
 
 try:
     from wagtail.models import Page
 except ImportError:  # fallback for Wagtail <5.0
-    try:
-        from wagtail.core.models import Page
-    except ImportError:  # fallback for Wagtail <2.0
-        from wagtail.wagtailcore.models import Page
-from wagtail import __version__ as WAGTAIL_VERSION
+    from wagtail.core.models import Page
 
+from wagtail import __version__ as WAGTAIL_VERSION
 from experiments.models import Experiment, ExperimentHistory
+
 
 class TestFrontEndView(TestCase):
 
@@ -280,6 +272,7 @@ class TestFrontEndView(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, 'Homepage alternative 2')
         self.assertContains(response, "What do you want?")
+
 
 class TestAdmin(TestCase):
     fixtures = ['test.json']
