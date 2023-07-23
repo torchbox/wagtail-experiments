@@ -1,5 +1,3 @@
-from __future__ import absolute_import, unicode_literals
-
 from hashlib import sha1
 from importlib import import_module
 from django.conf import settings
@@ -8,35 +6,14 @@ from django.utils.translation import gettext_lazy as _
 
 try:
     from wagtail.models import Page
+    from wagtail.admin.panels import FieldPanel, PageChooserPanel, InlinePanel
 except ImportError:  # fallback for Wagtail <5.0
-    try:
-        from wagtail.core.models import Page
-    except ImportError:  # fallback for Wagtail <2.0
-        from wagtail.wagtailcore.models import Page
-
-try:
-    from wagtail.models import Orderable
-except ImportError:  # fallback for Wagtail <2.0
-    from wagtail.wagtailcore.models import Orderable
-
-
+    from wagtail.core.models import Page
+    from wagtail.admin.edit_handlers import FieldPanel, PageChooserPanel, InlinePanel
+from wagtail.models import Orderable
 
 from modelcluster.fields import ParentalKey
 from modelcluster.models import ClusterableModel
-
-try:
-    from wagtail.admin.panels import FieldPanel, PageChooserPanel, InlinePanel
-except ImportError:  # fallback for Wagtail <5.0
-    try:
-        from wagtail.admin.edit_handlers import FieldPanel, PageChooserPanel, InlinePanel
-    except ImportError:  # fallback for Wagtail <2.0
-        from wagtail.wagtailadmin.edit_handlers import FieldPanel, PageChooserPanel, InlinePanel
-
-try:
-    from wagtail.models import Orderable
-except ImportError:  # fallback for Wagtail <2.0
-    from wagtail.wagtailcore.models import Orderable
-
 
 BACKEND = None
 
