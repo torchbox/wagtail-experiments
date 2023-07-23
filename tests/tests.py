@@ -36,7 +36,6 @@ class TestFrontEndView(TestCase):
         # User ID 33333333-3333-3333-3333-333333333333 receives alternative 1
 
     def test_user_is_assigned_user_id(self):
-        print('test_user_is_assigned_user_id')
         session = self.client.session
         self.assertNotIn('experiment_user_id', session)
 
