@@ -1,12 +1,6 @@
-from __future__ import absolute_import, unicode_literals
-
 from django.urls import include, re_path
 from django.contrib.admin.utils import quote
-
-try:
-    from django.urls import reverse
-except ImportError:  # fallback for Django <=1.9
-    from django.core.urlresolvers import reverse
+from django.urls import reverse
 
 from django.utils.translation import gettext_lazy as _
 from experiments import admin_urls
@@ -17,14 +11,10 @@ from wagtail.contrib.modeladmin.views import CreateView, EditView
 try:
     from wagtail import hooks
 except ImportError:  # fallback for Wagtail <5.0
-    try:
-        from wagtail.core import hooks
-    except ImportError:  # fallback for Wagtail <2.0
-        from wagtail.wagtailcore import hooks
+    from wagtail.core import hooks
 
 from .models import Experiment
 from .utils import get_user_id, impersonate_other_page, use_control_title
-
 
 @hooks.register('register_admin_urls')
 def register_admin_urls():
