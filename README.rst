@@ -14,7 +14,7 @@ This module supports the creation of A/B testing experiments within a Wagtail si
 Installation for version 0.9:
 -----------------------------
 
-wagtail-experiments is compatible with Wagtail 1.7 to 5.0, and Django 1.8 to 4.2. To install::
+This version of wagtail-experiments is compatible with Wagtail 4.1 to 5, and Django 3.2 to 4.2. To install::
 
 Download the source from https://github.com/TopDevPros/wagtail-experiments. Then follow the instructons below, skipping the "pip install".
 
