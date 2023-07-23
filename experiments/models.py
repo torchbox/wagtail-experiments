@@ -287,31 +287,3 @@ class ExperimentHistory(models.Model):
 
         verbose_name = _('Experiment History')
         verbose_name_plural = _('Experiment Histories')
-
-if settings.DEBUG:
-    class SimplePage(Page):
-        '''
-            Only used to test experiments.
-        '''
-
-        body = models.TextField()
-
-        panels = [
-            FieldPanel("body"),
-        ]
-
-        def get_context(self, request):
-            context = super(SimplePage, self).get_context(request)
-            if 'breadcrumb' in context:
-                context['breadcrumb'] = self.get_ancestors(inclusive=True).filter(depth__gte=request.site.root_page.depth)
-            return context
-
-
-    class SimplePageRelatedLink(Orderable):
-        '''
-            Only used to test experiments.
-        '''
-
-        page = ParentalKey(SimplePage, related_name='related_links')
-        url = models.URLField()
-        link_text = models.CharField(max_length=255)
