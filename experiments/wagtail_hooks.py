@@ -7,26 +7,14 @@ from experiments import admin_urls
 from wagtail.contrib.modeladmin.helpers import ButtonHelper
 from wagtail.contrib.modeladmin.options import ModelAdmin, modeladmin_register
 from wagtail.contrib.modeladmin.views import CreateView, EditView
-
-try:
-    from wagtail import hooks
-except ImportError:  # fallback for Wagtail <5.0
-    from wagtail.core import hooks
+from wagtail import hooks
 
 from .models import Experiment
-from .utils import get_user_id, impersonate_other_page, use_control_title
+from .utils import get_user_id, impersonate_other_page
+
 
 @hooks.register('register_admin_urls')
 def register_admin_urls():
-    '''
-        Register a wagtail hook for the admin urls.
-
-        Args:
-            None
-
-        Return:
-            A list of url paths for experiments.
-    '''
     return [
         re_path(r'^experiments/', include(admin_urls, namespace='experiments')),
     ]
@@ -160,7 +148,7 @@ def check_experiments(page, request, serve_args, serve_kwargs):
             and the variation page for this user is not the same as the page,
             then show the variation page. Otherwise, return nothing.
     '''
-    
+
     # If the page being served is the goal page of an experiment, log a completion
     completed_experiments = Experiment.objects.filter(goal=page, status='live')
 
@@ -186,9 +174,7 @@ def check_experiments(page, request, serve_args, serve_kwargs):
 
             variation = variation.specific
 
-            use_title = use_control_title(experiment, variation)
-
             # hack the page-tree-related fields to match the control page
-            impersonate_other_page(variation, page, use_title)
+            impersonate_other_page(variation, page)
 
             return variation.serve(request, *serve_args, **serve_kwargs)

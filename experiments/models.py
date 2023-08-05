@@ -4,16 +4,12 @@ from django.conf import settings
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
-try:
-    from wagtail.models import Page
-    from wagtail.admin.panels import FieldPanel, PageChooserPanel, InlinePanel
-except ImportError:  # fallback for Wagtail <5.0
-    from wagtail.core.models import Page
-    from wagtail.admin.edit_handlers import FieldPanel, PageChooserPanel, InlinePanel
-from wagtail.models import Orderable
+from wagtail.admin.panels import FieldPanel, PageChooserPanel, InlinePanel
+from wagtail.models import Orderable, Page
 
 from modelcluster.fields import ParentalKey
 from modelcluster.models import ClusterableModel
+
 
 BACKEND = None
 
@@ -66,8 +62,8 @@ class Experiment(ClusterableModel):
 
 
     class Meta:
-        verbose_name = _('Experiment')
-        verbose_name_plural = _('Experiments')
+        verbose_name = _('experiment')
+        verbose_name_plural = _('experiments')
 
 
     def __init__(self, *args, **kwargs):
@@ -114,9 +110,6 @@ class Experiment(ClusterableModel):
         '''
             Get all the variations for the control page.
 
-            If the alternative has "use_control_title" set, then
-            change the alternative's title to match the control's title.
-
             Args:
                 self: instance of the class Experiment
 
@@ -126,8 +119,6 @@ class Experiment(ClusterableModel):
 
         variations = [self.control_page]
         for alternative in self.alternatives.select_related('page'):
-            if alternative.use_control_title:
-                alternative.page.title = self.control_page.title
             variations.append(alternative.page)
 
         return variations
@@ -233,11 +224,9 @@ class Alternative(Orderable):
 
     experiment = ParentalKey(Experiment, related_name='alternatives', on_delete=models.CASCADE)
     page = models.ForeignKey('wagtailcore.Page', related_name='+', on_delete=models.CASCADE)
-    use_control_title = models.BooleanField(_("Use Control's Title"), default=False)
 
     panels = [
         PageChooserPanel('page'),
-        FieldPanel("use_control_title"),
     ]
 
     class Meta:

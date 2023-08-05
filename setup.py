@@ -29,9 +29,8 @@ setup(
         'Framework :: Django :: 4.1',
         'Framework :: Django :: 4.2',
         'Framework :: Wagtail',
-        'Framework :: Wagtail :: 4.1',
-        'Framework :: Wagtail :: 4.2',
-        'Framework :: Wagtail :: 5.0',
+        'Framework :: Wagtail :: 4',
+        'Framework :: Wagtail :: 5',
     ],
 )
 

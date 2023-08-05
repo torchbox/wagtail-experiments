@@ -3,8 +3,6 @@ import uuid
 from .models import Alternative
 
 
-
-
 def get_user_id(request):
     '''
         Get user id for this request. A user ID is assigned randomly
@@ -41,14 +39,13 @@ def percentage(fraction, population):
         return 0.0
 
 
-def impersonate_other_page(page, other, use_other_title):
+def impersonate_other_page(page, other):
     '''
         Modify the tree location data of `page` to resemble `other`.
 
         Args:
             page:               the page to modify
             other:              the page to impersonate
-            use_control_title:  whether use to use the other's title
 
         Return:
             None
@@ -56,33 +53,3 @@ def impersonate_other_page(page, other, use_other_title):
 
     page.path = other.path
     page.depth = other.depth
-    page.url_path = other.url_path
-    if use_other_title:
-        page.title = other.title
-
-def use_control_title(experiment, page):
-    '''
-        Determine whether to use the control page's title
-        on an alternative page. If alternative page doesn't
-        exists, then defaults to False.
-
-        Args:
-            experiment: the primary key for the experiment
-            page:       the primary key for the page
-
-        Return:
-            True if control title should be used. Otherwise, False.
-    '''
-
-    try:
-        alt = Alternative.objects.get(experiment=experiment, page=page)
-        if alt:
-            use_control_title = alt.use_control_title
-        else:
-            use_control_title = False
-
-    except Alternative.DoesNotExist:
-        use_control_title = False
-
-    return use_control_title
-

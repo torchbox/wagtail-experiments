@@ -1,12 +1,6 @@
 from django.db import models
 from modelcluster.fields import ParentalKey
-
-try:
-    from wagtail.models import Page
-except ImportError:  # fallback for Wagtail <5.0
-    from wagtail.core.models import Page
-
-from wagtail.models import Orderable
+from wagtail.models import Orderable, Page
 
 
 class SimplePage(Page):
@@ -14,7 +8,7 @@ class SimplePage(Page):
 
     def get_context(self, request):
         context = super(SimplePage, self).get_context(request)
-        context['breadcrumb'] = self.get_ancestors(inclusive=True).filter(depth__gte=request.site.root_page.depth)
+        context['breadcrumb'] = self.get_ancestors(inclusive=True)
         return context
 
 

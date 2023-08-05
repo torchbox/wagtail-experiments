@@ -1,7 +1,7 @@
 
-from django.conf.urls import include, re_path
+from django.urls import include, re_path
+from wagtail import urls as wagtail_urls
 from wagtail.admin import urls as wagtailadmin_urls
-from wagtail.core import urls as wagtail_urls
 
 from experiments import views as experiment_views
 

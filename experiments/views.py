@@ -10,7 +10,8 @@ except ImportError:  # fallback for Wagtail <5.0
     from wagtail.core.models import Page
 
 from .models import Experiment, get_backend
-from .utils import get_user_id, impersonate_other_page, percentage, use_control_title
+from .utils import get_user_id, impersonate_other_page, percentage
+
 
 def record_completion(request, slug):
     '''
@@ -122,9 +123,8 @@ def preview_for_report(request, experiment_id, page_id):
     if not page.permissions_for_user(request.user).can_publish():
         raise PermissionDenied
 
-    # hack the page-tree-related fields, and possibly the title, to match the control page
-    use_other_title = use_control_title(experiment, page)
-    impersonate_other_page(page, experiment.control_page, use_other_title)
+    # hack the page-tree-related fields to match the control page
+    impersonate_other_page(page, experiment.control_page)
 
     # pass in the real user request rather than page.dummy_request(), so that request.user
     # and request.revision_id will be picked up by the wagtail user bar
