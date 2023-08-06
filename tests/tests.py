@@ -4,13 +4,8 @@ from django.contrib.auth.models import User
 from django.test import TestCase
 from django.urls import reverse
 from unittest import skipIf
+from wagtail.models import Page
 
-try:
-    from wagtail.models import Page
-except ImportError:  # fallback for Wagtail <5.0
-    from wagtail.core.models import Page
-
-from wagtail import __version__ as WAGTAIL_VERSION
 from experiments.models import Experiment, ExperimentHistory
 
 
