@@ -197,8 +197,8 @@ class Alternative(Orderable):
     ]
 
     class Meta:
-        verbose_name = _('Alternative')
-        verbose_name_plural = _('Alternatives')
+        verbose_name = _('alternative')
+        verbose_name_plural = _('alternatives')
 
 
 class ExperimentHistory(models.Model):
@@ -218,5 +218,5 @@ class ExperimentHistory(models.Model):
             ('experiment', 'date', 'variation'),
         ]
 
-        verbose_name = _('Experiment History')
-        verbose_name_plural = _('Experiment Histories')
+        verbose_name = _('experiment history')
+        verbose_name_plural = _('experiment histories')
