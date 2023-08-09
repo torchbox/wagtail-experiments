@@ -11,8 +11,8 @@ Wagtail Experiments
 This module supports the creation of A/B testing experiments within a Wagtail site. Several alternative versions of a page are set up, and on visiting a designated control page, a user is presented with one of those variations, selected at random (using a simplified version of the `PlanOut algorithm <https://facebook.github.io/planout/>`_). The number of visitors receiving each variation is logged, along with the number that subsequently go on to complete the experiment by visiting a designated goal page.
 
 
-Installation for version 0.3:
------------------------------
+Installation
+------------
 
 wagtail-experiments is compatible with Wagtail 4.1 to 5.1, and Django 3.2 to 4.2. To install::
 
