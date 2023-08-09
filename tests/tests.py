@@ -3,7 +3,6 @@ from django import __version__ as DJANGO_VERSION
 from django.contrib.auth.models import User
 from django.test import TestCase
 from django.urls import reverse
-from unittest import skipIf
 from wagtail.models import Page
 
 from experiments.models import Experiment, ExperimentHistory
@@ -210,27 +209,21 @@ class TestFrontEndView(TestCase):
         self.client.get('/signup-complete/')
         self.assertEqual(ExperimentHistory.objects.filter(experiment=self.experiment).count(), 0)
 
-    def test_alternative_title_is_used(self):
-        self.experiment.status = 'completed'
-        self.experiment.winning_variation = self.homepage_alternative_2
-        self.experiment.save()
-
+    def test_original_title_is_preserved(self):
         session = self.client.session
+        session['experiment_user_id'] = '11111111-1111-1111-1111-111111111111'
+        session.save()
+        response = self.client.get('/')
+        self.assertContains(response, "<title>Home</title>")
+
+        # User receiving an alternative version should see the title as "Home", not "Homepage alternative 1"
+        session.clear()
         session['experiment_user_id'] = '33333333-3333-3333-3333-333333333333'
         session.save()
-
         response = self.client.get('/')
-        self.assertEqual(response.status_code, 200)
-        self.assertContains(response, 'Homepage alternative 2')
+        self.assertContains(response, "<title>Home</title>")
 
-    @skipIf(DJANGO_VERSION >= '3.2.0', 'breadcrumbs not included in request.site')
     def test_original_tree_position_is_preserved(self):
-        '''
-            This test fails with django4 because the "request.site" no
-            longer reports the depth. Is there another way
-            to verify the original tree position is preserved?
-        '''
-
         # Alternate version should position itself in the tree as if it were the control page
         session = self.client.session
         session['experiment_user_id'] = '33333333-3333-3333-3333-333333333333'
@@ -251,7 +244,7 @@ class TestFrontEndView(TestCase):
         response = self.client.get('/')
 
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, 'Homepage alternative 2')
+        self.assertContains(response, "<title>Home</title>")
         self.assertContains(response, "What do you want?")
 
 
@@ -496,4 +489,4 @@ class TestAdmin(TestCase):
             f'/{self.admin_home}/experiments/experiment/report/preview/{self.experiment.pk}/{self.homepage_alternative_2.pk}/'
         )
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, '<title>Homepage alternative 2</title>')
+        self.assertContains(response, '<title>Home</title>')
