@@ -3,11 +3,8 @@ from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.utils.translation import gettext as _
 
-try:
-    from wagtail.admin import messages
-    from wagtail.models import Page
-except ImportError:  # fallback for Wagtail <5.0
-    from wagtail.core.models import Page
+from wagtail.admin import messages
+from wagtail.models import Page
 
 from .models import Experiment, get_backend
 from .utils import get_user_id, impersonate_other_page, percentage
