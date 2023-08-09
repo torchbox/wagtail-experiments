@@ -67,19 +67,6 @@ class Experiment(ClusterableModel):
 
 
     def __init__(self, *args, **kwargs):
-        '''
-            Initiate an experiment for a page. Set the
-            _initial_status to the experiment's status.
-
-            Args:
-                self:    instance of the class Experiment
-                args:    positional arguments to initiate experiment
-                kwargs:  keyword arguments to initiate experiment
-
-            Return:
-                Nothing
-        '''
-
         super(Experiment, self).__init__(*args, **kwargs)
         self._initial_status = self.status
 
@@ -110,9 +97,6 @@ class Experiment(ClusterableModel):
         '''
             Get all the variations for the control page.
 
-            Args:
-                self: instance of the class Experiment
-
             Return:
                 variations: a list with the control page and all alternatives
         '''
@@ -128,7 +112,6 @@ class Experiment(ClusterableModel):
             Get a page variation for this user and request session.
 
             Args:
-                self:    instance of the class Experiment
                 user_id: the id for this user
 
             Return:
@@ -151,7 +134,6 @@ class Experiment(ClusterableModel):
             Record a new participant and return the variation for them to use.
 
             Args:
-                self:    instance of the class Experiment
                 user_id: the id for this user
                 request: django HttpRequest
 
@@ -168,7 +150,6 @@ class Experiment(ClusterableModel):
             Record the completion of the variation for the user.
 
             Args:
-                self:    instance of the class Experiment
                 user_id: the id for this user
                 request: django HttpRequest
 
@@ -194,7 +175,6 @@ class Experiment(ClusterableModel):
             Save the variation that won.
 
             Args:
-                self:      instance of the class Experiment
                 variation: winning variation
 
             Return:
@@ -206,14 +186,6 @@ class Experiment(ClusterableModel):
         self.save()
 
     def __str__(self):
-        '''
-            Args:
-                self: instance of the class Experiment
-
-            Return:
-                the experiment's name
-        '''
-
         return self.name
 
 

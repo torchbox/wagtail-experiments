@@ -21,22 +21,7 @@ def register_admin_urls():
 
 
 class ExperimentButtonHelper(ButtonHelper):
-    '''
-        Define the helper button for an experiment.
-    '''
     def report_button(self, pk, classnames_add=[], classnames_exclude=[]):
-        '''
-            Get the report button.
-
-            Args:
-                self:                instance of the class ExperimentButtonHelper
-                pk:                  the primary key for the experiment.
-                classnames_add:      a list of classnames to include; defaults to empty list.
-                classnames_exclude:  a list of to exclude; defaults to empty list.
-
-            Return:
-                A list of url paths for experiments.
-        '''
         classnames = classnames_add
         cn = self.finalise_classname(classnames, classnames_exclude)
         return {
@@ -48,19 +33,6 @@ class ExperimentButtonHelper(ButtonHelper):
 
     def get_buttons_for_obj(self, obj, exclude=[], classnames_add=[],
                             classnames_exclude=[]):
-        '''
-            Get the wagtail button to generate a report.
-
-            Args:
-                self:                instance of the class ExperimentButtonHelper
-                obj:                 the primary key for the experiment.
-                exclude:             a list to exclude inspect, edit, and/or delete; defaults to empty list.
-                classnames_add:      a list of classnames to include; defaults to empty list.
-                classnames_exclude:  a list of to exclude; defaults to empty list.
-
-            Return:
-                A list of url paths for experiments.
-        '''
         ph = self.permission_helper
         pk = quote(getattr(obj, self.opts.pk.attname))
         btns = super(ExperimentButtonHelper, self).get_buttons_for_obj(obj, exclude, classnames_add, classnames_exclude)
@@ -73,21 +45,10 @@ class ExperimentButtonHelper(ButtonHelper):
 
 
 class CreateExperimentView(CreateView):
-    '''
-        Define the Create view for an experiment.
-    '''
     def form_valid(self, form):
-        '''
-            Check the form is valid. If the form's status is "live",
-            then the alternative draft content is activated.
-
-            Args:
-                self:  instance of the class CreateExperimentView
-                form:  form to validate.
-
-            Return:
-                A django HttpResponse whether the form is valid.
-        '''
+        # Called when the creation form is submitted and valid.
+        # If the form's status is "live", then the alternative
+        # draft content is activated
         response = super(CreateExperimentView, self).form_valid(form)
         if form.instance.status == 'live':
             form.instance.activate_alternative_draft_content()
@@ -95,21 +56,10 @@ class CreateExperimentView(CreateView):
 
 
 class EditExperimentView(EditView):
-    '''
-        Define the Edit view for an experiment.
-    '''
     def form_valid(self, form):
-        '''
-            Check the form is valid. If the form's status is "live",
-            then the alternative draft content is activated.
-
-            Args:
-                self:  instance of the class CreateExperimentView
-                form:  form to validate.
-
-            Return:
-                A django HttpResponse whether the form is valid.
-        '''
+        # Called when the edit form is submitted and valid.
+        # If the form's status is changing from "draft" to "live", then
+        # the alternative draft content is activated
         response = super(EditExperimentView, self).form_valid(form)
         if self.instance._initial_status == 'draft' and self.instance.status == 'live':
             self.instance.activate_alternative_draft_content()
@@ -119,7 +69,7 @@ class EditExperimentView(EditView):
 
 class ExperimentModelAdmin(ModelAdmin):
     '''
-        Define the admin model for an Experiment.
+        Define the admin interface for experiments via the ModelAdmin app.
     '''
     model = Experiment
     add_to_settings_menu = True
