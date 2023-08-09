@@ -117,10 +117,8 @@ class Experiment(ClusterableModel):
 
         variations = self.get_variations()
 
+        # choose uniformly from variations, based on a hash of user_id and experiment.slug
         hash_input = "{0}.{1}".format(self.slug, user_id)
-        # does this distribute variations evenly?
-        # we probably need to track number of times each
-        # variation is selected, sort by count, and choose the lowest
         hash_str = sha1(hash_input.encode('utf-8')).hexdigest()[:7]
         variation_index = int(hash_str, 16) % len(variations)
 
