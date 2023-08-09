@@ -470,10 +470,7 @@ class TestAdmin(TestCase):
     def test_experiment_delete(self):
         response = self.client.get(f'/{self.admin_home}/experiments/experiment/delete/{self.experiment.pk}/')
         self.assertEqual(response.status_code, 200)
-        try:
-            self.assertContains(response, "Are you sure you want to delete this Experiment?")
-        except AssertionError: # fallback for Django <2.0
-            self.assertContains(response, "Are you sure you want to delete this experiment?")
+        self.assertContains(response, "Are you sure you want to delete this experiment?")
 
         response = self.client.post(f'/{self.admin_home}/experiments/experiment/delete/{self.experiment.pk}/')
         self.assertRedirects(response, f'/{self.admin_home}/experiments/experiment/')
