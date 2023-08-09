@@ -85,10 +85,7 @@ class Experiment(ClusterableModel):
 
         for alternative in self.alternatives.select_related('page'):
             if not alternative.page.live:
-                try:
-                    revision = alternative.page.get_latest_revision_as_object()
-                except AttributeError:  # fallback for Wagtail <2.3
-                    revision = alternative.page.get_latest_revision_as_page()
+                revision = alternative.page.get_latest_revision_as_object()
                 revision.live = False
                 revision.has_unpublished_changes = True
                 revision.save()
