@@ -101,7 +101,7 @@
     "pk": 4,
     "model": "tests.simplepage",
     "fields": {
-        "body": "Oh, it is you. What do you want?"
+        "body": "Oh, it's you. What do you want?"
     }
 },
 {
