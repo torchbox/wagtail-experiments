@@ -53,3 +53,5 @@ def impersonate_other_page(page, other):
 
     page.path = other.path
     page.depth = other.depth
+    page.url_path = other.url_path
+    page.title = other.title
