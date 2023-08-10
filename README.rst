@@ -3,9 +3,6 @@
 Wagtail Experiments
 ===================
 
-.. image:: https://api.travis-ci.org/torchbox/wagtail-experiments.svg?branch=master
-    :target: https://travis-ci.org/torchbox/wagtail-experiments
-
 **A/B testing for Wagtail**
 
 This module supports the creation of A/B testing experiments within a Wagtail site. Several alternative versions of a page are set up, and on visiting a designated control page, a user is presented with one of those variations, selected at random (using a simplified version of the `PlanOut algorithm <https://facebook.github.io/planout/>`_). The number of visitors receiving each variation is logged, along with the number that subsequently go on to complete the experiment by visiting a designated goal page.
