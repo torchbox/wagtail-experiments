@@ -23,6 +23,9 @@ class TestFrontEndView(TestCase):
         # User ID 22222222-2222-2222-2222-222222222222 also receives the control
         # User ID 33333333-3333-3333-3333-333333333333 receives alternative 1
 
+    def test_fail(self):
+        self.assertEqual(1, 2)
+
     def test_user_is_assigned_user_id(self):
         session = self.client.session
         self.assertNotIn('experiment_user_id', session)
