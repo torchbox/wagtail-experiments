@@ -8,10 +8,10 @@ on:
 
 # Current configuration:
 # - django 3.2, python 3.8, wagtail 4.1, postgres
-# - django 4.0, python 3.9, wagtail 4.2, sqlite
-# - django 4.1, python 3.10, wagtail 5.0, postgres
-# - django 4.2, python 3.11, wagtail 5.1, sqlite
-# - django 3.2, python 3.10, wagtail main, sqlite (allow failures)
+# - django 4.0, python 3.9, wagtail 5.0, sqlite
+# - django 4.1, python 3.10, wagtail 5.1, postgres
+# - django 4.2, python 3.11, wagtail 5.2, sqlite
+# - django 4.2, python 3.12, wagtail main, sqlite (allow failures)
 jobs:
   test:
     runs-on: ubuntu-latest
@@ -26,22 +26,22 @@ jobs:
             experimental: false
           - python: "3.9"
             django: "Django>=4.0,<4.1"
-            wagtail: "wagtail>=4.2,<5.0"
+            wagtail: "wagtail>=5.0,<5.1"
             database: "sqlite3"
             experimental: false
           - python: "3.10"
             django: "Django>=4.1,<4.2"
-            wagtail: "wagtail>=5.0,<5.1"
+            wagtail: "wagtail>=5.1,<5.2"
             database: "postgresql"
             experimental: false
           - python: "3.11"
             django: "Django>=4.2,<4.3"
-            wagtail: "wagtail>=5.1,<5.2"
+            wagtail: "wagtail>=5.2,<5.3"
             database: "sqlite3"
             experimental: false
 
-          - python: "3.11"
-            django: "Django>=4.1,<4.2"
+          - python: "3.12"
+            django: "Django>=4.2,<4.3"
             wagtail: "git+https://github.com/wagtail/wagtail.git@main#egg=wagtail"
             database: "sqlite3"
             experimental: true
