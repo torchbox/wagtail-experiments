@@ -23,27 +23,32 @@ jobs:
             django: "Django>=3.2,<4.0"
             wagtail: "wagtail>=4.1,<4.2"
             database: "postgresql"
+            modeladmin: false
             experimental: false
           - python: "3.9"
             django: "Django>=4.0,<4.1"
             wagtail: "wagtail>=5.0,<5.1"
             database: "sqlite3"
+            modeladmin: false
             experimental: false
           - python: "3.10"
             django: "Django>=4.1,<4.2"
             wagtail: "wagtail>=5.1,<5.2"
             database: "postgresql"
+            modeladmin: true
             experimental: false
           - python: "3.11"
             django: "Django>=4.2,<4.3"
             wagtail: "wagtail>=5.2,<5.3"
             database: "sqlite3"
+            modeladmin: true
             experimental: false
 
           - python: "3.12"
             django: "Django>=4.2,<4.3"
             wagtail: "git+https://github.com/wagtail/wagtail.git@main#egg=wagtail"
             database: "sqlite3"
+            modeladmin: true
             experimental: true
 
     services:
@@ -68,6 +73,9 @@ jobs:
           pip install "${{ matrix.django }}"
           pip install "${{ matrix.wagtail }}"
           pip install -e .[testing]
+      - name: Install wagtail-modeladmin
+        if: ${{ matrix.modeladmin }}
+        run: pip install wagtail-modeladmin
       - name: Test
         run: ./runtests.py
         env:
