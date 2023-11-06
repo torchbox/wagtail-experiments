@@ -4,10 +4,17 @@ from django.urls import reverse
 
 from django.utils.translation import gettext_lazy as _
 from experiments import admin_urls
-from wagtail.contrib.modeladmin.helpers import ButtonHelper
-from wagtail.contrib.modeladmin.options import ModelAdmin, modeladmin_register
-from wagtail.contrib.modeladmin.views import CreateView, EditView
 from wagtail import hooks
+
+try:
+    from wagtail_modeladmin.helpers import ButtonHelper
+    from wagtail_modeladmin.options import ModelAdmin, modeladmin_register
+    from wagtail_modeladmin.views import CreateView, EditView
+except ImportError:
+    from wagtail.contrib.modeladmin.helpers import ButtonHelper
+    from wagtail.contrib.modeladmin.options import ModelAdmin, modeladmin_register
+    from wagtail.contrib.modeladmin.views import CreateView, EditView
+
 
 from .models import Experiment
 from .utils import get_user_id, impersonate_other_page

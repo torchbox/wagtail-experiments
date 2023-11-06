@@ -3,6 +3,14 @@ import django
 
 from wagtail import VERSION as WAGTAIL_VERSION
 
+try:
+    import wagtail_modeladmin
+except ImportError:
+    HAS_MODELADMIN_PACKAGE = False
+else:
+    HAS_MODELADMIN_PACKAGE = True
+
+
 DATABASES = {
     'default': {
         'ENGINE': os.environ.get('DATABASE_ENGINE', 'django.db.backends.sqlite3'),
@@ -64,7 +72,7 @@ INSTALLED_APPS = [
     'experiments',
     'tests',
 
-    'wagtail.contrib.modeladmin',
+    'wagtail_modeladmin' if HAS_MODELADMIN_PACKAGE else 'wagtail.contrib.modeladmin',
     'wagtail.search',
     'wagtail.sites',
     'wagtail.users',
