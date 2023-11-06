@@ -1,6 +1,13 @@
 Changelog
 =========
 
+0.3.1 (2023-11-06)
+~~~~~~~~~~~~~~~~~~
+
+ * Use external wagtail-modeladmin package where available
+ * Added support for Wagtail 5.1 - 5.2 and provisional support for Wagtail 6.0
+
+
 0.3 (2023-08-10)
 ~~~~~~~~~~~~~~~~
 
