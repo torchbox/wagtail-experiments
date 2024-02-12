@@ -1,7 +1,7 @@
 
 from django import __version__ as DJANGO_VERSION
 from django.contrib.auth.models import User
-from django.test import TestCase
+from django.test import Client, TestCase
 from django.urls import reverse
 from wagtail.models import Page
 
@@ -291,6 +291,32 @@ class TestAdmin(TestCase):
         postdata.update(kwargs)
         return postdata
 
+    def make_draft_page_edit(self, page, title, slug, body):
+        post_data = {
+            'title': title,
+            'slug': slug,
+            'body': body,
+            'related_links-TOTAL_FORMS': 0,
+            'related_links-INITIAL_FORMS': 0,
+            'related_links-MIN_NUM_FORMS': 0,
+            'related_links-MAX_NUM_FORMS': 1000,
+        }
+        response = self.client.post(
+            reverse("wagtailadmin_pages:edit", args=(page.id,)), post_data
+        )
+        self.assertRedirects(
+            response, reverse("wagtailadmin_pages:edit", args=(page.id,))
+        )
+        page.refresh_from_db()
+
+    def get_homepage(self, user_id):
+        client = Client()
+        session = client.session
+        session['experiment_user_id'] = user_id
+        session.save()
+        response = client.get('/')
+        return response
+
     def test_experiments_menu_item(self):
         response = self.client.get(reverse('wagtailadmin_home'))
         self.assertEqual(response.status_code, 200)
@@ -340,12 +366,13 @@ class TestAdmin(TestCase):
 
     def test_draft_page_content_is_activated_when_experiment_goes_live(self):
         # make a draft edit to homepage_alternative_1
-        self.homepage_alternative_1.body = 'updated'
-        self.homepage_alternative_1.save_revision()
+        self.make_draft_page_edit(self.homepage_alternative_1, "Homepage alternative 1", "home-alternative-1", "updated")
 
-        # live database entry should not have been updated yet
-        homepage_alternative_1 = Page.objects.get(pk=self.homepage_alternative_1.pk).specific
-        self.assertEqual(homepage_alternative_1.body, "Welcome to our site! It's lovely to meet you.")
+        # The version seen by users receiving that alternative should remain unchanged
+        response = self.get_homepage('33333333-3333-3333-3333-333333333333')
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "<p>Welcome to our site! It&#x27;s lovely to meet you.</p>")
+        self.assertNotContains(response, "<p>updated</p>")
 
         # submit an edit to the experiment, but preserve its live status
         self.client.post(
@@ -353,17 +380,21 @@ class TestAdmin(TestCase):
             self.get_edit_postdata()
         )
         # editing an already-live experiment should not update the page content
-        homepage_alternative_1 = Page.objects.get(pk=self.homepage_alternative_1.pk).specific
-        self.assertEqual(homepage_alternative_1.body, "Welcome to our site! It's lovely to meet you.")
+        response = self.get_homepage('33333333-3333-3333-3333-333333333333')
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "<p>Welcome to our site! It&#x27;s lovely to meet you.</p>")
+        self.assertNotContains(response, "<p>updated</p>")
 
         # make the experiment draft
         self.client.post(
             f'/{self.admin_home}/experiments/experiment/edit/{self.experiment.pk}/',
             self.get_edit_postdata(status='draft')
         )
-        # page content should still be unchanged
-        homepage_alternative_1 = Page.objects.get(pk=self.homepage_alternative_1.pk).specific
-        self.assertEqual(homepage_alternative_1.body, "Welcome to our site! It's lovely to meet you.")
+        # content should revert to the control page
+        response = self.get_homepage('33333333-3333-3333-3333-333333333333')
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "<p>Welcome to our site!</p>")
+        self.assertNotContains(response, "<p>updated</p>")
 
         # set the experiment from draft to live
         self.client.post(
@@ -371,17 +402,23 @@ class TestAdmin(TestCase):
             self.get_edit_postdata(status='live')
         )
         # page content should be updated to follow the draft revision now
-        homepage_alternative_1 = Page.objects.get(pk=self.homepage_alternative_1.pk).specific
-        self.assertEqual(homepage_alternative_1.body, 'updated')
+        response = self.get_homepage('33333333-3333-3333-3333-333333333333')
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "<p>updated</p>")
+        self.assertNotContains(response, "<p>Welcome to our site! It&#x27;s lovely to meet you.</p>")
 
     def test_draft_page_content_is_activated_when_creating_experiment_as_live(self):
         # make a draft edit to homepage_alternative_1
         self.homepage_alternative_1.body = 'updated'
-        self.homepage_alternative_1.save_revision()
+        self.make_draft_page_edit(self.homepage_alternative_1, "Homepage alternative 1", "home-alternative-1", "updated")
 
-        # live database entry should not have been updated yet
-        homepage_alternative_1 = Page.objects.get(pk=self.homepage_alternative_1.pk).specific
-        self.assertEqual(homepage_alternative_1.body, "Welcome to our site! It's lovely to meet you.")
+        # The version seen by users receiving that alternative should remain unchanged
+        response = self.get_homepage('33333333-3333-3333-3333-333333333333')
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "<p>Welcome to our site! It&#x27;s lovely to meet you.</p>")
+        self.assertNotContains(response, "<p>updated</p>")
+
+        self.experiment.delete()
 
         # create a new experiment with an immediate live status
         response = self.client.post(f'/{self.admin_home}/experiments/experiment/create/', {
@@ -403,16 +440,17 @@ class TestAdmin(TestCase):
         self.assertRedirects(response, f'/{self.admin_home}/experiments/experiment/')
 
         # page content should be updated to follow the draft revision now
-        homepage_alternative_1 = Page.objects.get(pk=self.homepage_alternative_1.pk).specific
-        self.assertEqual(homepage_alternative_1.body, 'updated')
+        response = self.get_homepage('33333333-3333-3333-3333-333333333333')
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "<p>updated</p>")
+        self.assertNotContains(response, "<p>Welcome to our site! It&#x27;s lovely to meet you.</p>")
 
     def test_draft_page_content_is_not_activated_on_published_pages(self):
         # publish homepage_alternative_1
         self.homepage_alternative_1.save_revision().publish()
 
         # make a draft edit to homepage_alternative_1
-        self.homepage_alternative_1.body = 'updated'
-        self.homepage_alternative_1.save_revision()
+        self.make_draft_page_edit(self.homepage_alternative_1, "Homepage alternative 1", "home-alternative-1", "updated")
 
         # make the experiment draft
         self.client.post(
@@ -425,17 +463,18 @@ class TestAdmin(TestCase):
             self.get_edit_postdata(status='live')
         )
 
-        # page content should still be unchanged
-        homepage_alternative_1 = Page.objects.get(pk=self.homepage_alternative_1.pk).specific
-        self.assertEqual(homepage_alternative_1.body, "Welcome to our site! It's lovely to meet you.")
+        # page content seen by users receiving that alternative should remain unchanged
+        response = self.get_homepage('33333333-3333-3333-3333-333333333333')
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "<p>Welcome to our site! It&#x27;s lovely to meet you.</p>")
+        self.assertNotContains(response, "<p>updated</p>")
 
     def test_draft_page_content_is_not_activated_on_published_pages_when_creating_experiment_as_live(self):
         # publish homepage_alternative_1
         self.homepage_alternative_1.save_revision().publish()
 
         # make a draft edit to homepage_alternative_1
-        self.homepage_alternative_1.body = 'updated'
-        self.homepage_alternative_1.save_revision()
+        self.make_draft_page_edit(self.homepage_alternative_1, "Homepage alternative 1", "home-alternative-1", "updated")
 
         # create a new experiment with an immediate live status
         response = self.client.post(f'/{self.admin_home}/experiments/experiment/create/', {
@@ -456,9 +495,11 @@ class TestAdmin(TestCase):
 
         self.assertRedirects(response, f'/{self.admin_home}/experiments/experiment/')
 
-        # page content should still be unchanged
-        homepage_alternative_1 = Page.objects.get(pk=self.homepage_alternative_1.pk).specific
-        self.assertEqual(homepage_alternative_1.body, "Welcome to our site! It's lovely to meet you.")
+        # page content seen by users receiving that alternative should remain unchanged
+        response = self.get_homepage('33333333-3333-3333-3333-333333333333')
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "<p>Welcome to our site! It&#x27;s lovely to meet you.</p>")
+        self.assertNotContains(response, "<p>updated</p>")
 
     def test_experiment_delete(self):
         response = self.client.get(f'/{self.admin_home}/experiments/experiment/delete/{self.experiment.pk}/')
