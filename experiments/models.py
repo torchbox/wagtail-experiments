@@ -196,7 +196,7 @@ class Alternative(Orderable):
         PageChooserPanel('page'),
     ]
 
-    class Meta:
+    class Meta(Orderable.Meta):
         verbose_name = _('alternative')
         verbose_name_plural = _('alternatives')
 
