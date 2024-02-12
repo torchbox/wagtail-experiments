@@ -261,6 +261,11 @@ class TestAdmin(TestCase):
         self.homepage_alternative_1 = Page.objects.get(url_path='/home/home-alternative-1/').specific
         self.homepage_alternative_2 = Page.objects.get(url_path='/home/home-alternative-2/').specific
 
+        # fill in revision IDs (not in the fixture)
+        for alternative in self.experiment.alternatives.all():
+            alternative.revision = alternative.page.specific.save_revision()
+            alternative.save()
+
         self.admin_home = reverse('wagtailadmin_home').strip('/')
 
     def get_edit_postdata(self, **kwargs):
