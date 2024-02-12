@@ -72,9 +72,10 @@ class Experiment(ClusterableModel):
 
     def activate_alternative_draft_content(self):
         '''
-            For any alternative pages that are unpublished, copy the latest
-            draft revision to the main table (with is_live=False) so that the
-            revision shown as an alternative is not an out-of-date one.
+            Called when making an experiment live. Update the experiment record to store the
+            current page revisions of the alternatives - the live revision if it is live, or
+            else the current draft revision. This ensures that any draft edits made after the
+            experiment goes live are not displayed to users.
 
             Args:
                 self: instance of the class Experiment
@@ -84,11 +85,14 @@ class Experiment(ClusterableModel):
         '''
 
         for alternative in self.alternatives.select_related('page'):
-            if not alternative.page.live:
-                revision = alternative.page.get_latest_revision_as_object()
-                revision.live = False
-                revision.has_unpublished_changes = True
-                revision.save()
+            if alternative.page.live:
+                alternative.revision = alternative.page.live_revision
+            else:
+                revision = alternative.page.get_latest_revision()
+                if not revision:
+                    revision = alternative.page.save_revision()
+                alternative.revision = revision
+            alternative.save()
 
     def get_variations(self):
         '''
@@ -99,8 +103,13 @@ class Experiment(ClusterableModel):
         '''
 
         variations = [self.control_page]
-        for alternative in self.alternatives.select_related('page'):
-            variations.append(alternative.page)
+        for alternative in self.alternatives.select_related('page', 'revision'):
+            if alternative.revision and not alternative.page.live:
+                # retrieve the version of the page indicated by the revision, so that we're
+                # not reflecting drafts that have been made since the experiment was created
+                variations.append(alternative.revision.as_object())
+            else:
+                variations.append(alternative.page)
 
         return variations
 
@@ -191,6 +200,7 @@ class Alternative(Orderable):
 
     experiment = ParentalKey(Experiment, related_name='alternatives', on_delete=models.CASCADE)
     page = models.ForeignKey('wagtailcore.Page', related_name='+', on_delete=models.CASCADE)
+    revision = models.ForeignKey('wagtailcore.Revision', related_name='+', on_delete=models.SET_NULL, null=True, blank=True)
 
     panels = [
         PageChooserPanel('page'),
