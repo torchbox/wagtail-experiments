@@ -11,9 +11,12 @@ try:
     from wagtail_modeladmin.options import ModelAdmin, modeladmin_register
     from wagtail_modeladmin.views import CreateView, EditView
 except ImportError:
-    from wagtail.contrib.modeladmin.helpers import ButtonHelper
-    from wagtail.contrib.modeladmin.options import ModelAdmin, modeladmin_register
-    from wagtail.contrib.modeladmin.views import CreateView, EditView
+    try:
+        from wagtail.contrib.modeladmin.helpers import ButtonHelper
+        from wagtail.contrib.modeladmin.options import ModelAdmin, modeladmin_register
+        from wagtail.contrib.modeladmin.views import CreateView, EditView
+    except ImportError:
+        raise ImportError("wagtail-experiments requires the wagtail-modeladmin package.")
 
 
 from .models import Experiment
