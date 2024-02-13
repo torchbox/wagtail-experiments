@@ -11,9 +11,7 @@ This module supports the creation of A/B testing experiments within a Wagtail si
 Installation
 ------------
 
-wagtail-experiments is compatible with Wagtail 4.1 to 6.0, and Django 3.2 to 5.0. It depends on the Wagtail ModelAdmin module, which is available as an external package as of Wagtail 5.0; we recommend using this rather than the bundled `wagtail.contrib.modeladmin` module to avoid deprecation warnings. The external package is required as of Wagtail 6.0.
-
-### On Wagtail 5.0 and above
+wagtail-experiments is compatible with Wagtail 5.2 to 6.0, and Django 4.2 to 5.0. It depends on the Wagtail ModelAdmin module, which is available as an external package as of Wagtail 5.0; we recommend using this rather than the bundled `wagtail.contrib.modeladmin` module to avoid deprecation warnings. The external package is required as of Wagtail 6.0.
 
 To install::
 
@@ -26,27 +24,6 @@ and ensure that the apps ``wagtail_modeladmin`` and ``experiments`` are included
     INSTALLED_APPS = [
         # ...
         'wagtail_modeladmin',
-        'experiments',
-        # ...
-    ]
-
-Then migrate::
-
-    ./manage.py migrate
-
-### On Wagtail 4.x
-
-To install::
-
-    pip install wagtail-experiments
-
-and ensure that the apps ``wagtail.contrib.modeladmin`` and ``experiments`` are included in your project's ``INSTALLED_APPS``:
-
-.. code-block:: python
-
-    INSTALLED_APPS = [
-        # ...
-        'wagtail.contrib.modeladmin',
         'experiments',
         # ...
     ]
