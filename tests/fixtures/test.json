@@ -1,6 +1,13 @@
 [
 {
     "pk": 1,
+    "model": "wagtailcore.locale",
+    "fields": {
+        "language_code": "en"
+    }
+},
+{
+    "pk": 1,
     "model": "wagtailcore.page",
     "fields": {
         "title": "Root",
@@ -14,7 +21,8 @@
         ],
         "path": "0001",
         "url_path": "/",
-        "slug": "root"
+        "slug": "root",
+        "locale_id": 1
     }
 },
 
@@ -30,7 +38,8 @@
         "content_type": ["tests", "simplepage"],
         "path": "00010001",
         "url_path": "/home/",
-        "slug": "home"
+        "slug": "home",
+        "locale_id": 1
     }
 },
 {
@@ -62,7 +71,8 @@
         "content_type": ["tests", "simplepage"],
         "path": "000100010001",
         "url_path": "/home/home-alternative-1/",
-        "slug": "home-alternative-1"
+        "slug": "home-alternative-1",
+        "locale_id": 1
     }
 },
 {
@@ -94,7 +104,8 @@
         "content_type": ["tests", "simplepage"],
         "path": "000100010002",
         "url_path": "/home/home-alternative-2/",
-        "slug": "home-alternative-2"
+        "slug": "home-alternative-2",
+        "locale_id": 1
     }
 },
 {
@@ -126,7 +137,8 @@
         "content_type": ["tests", "simplepage"],
         "path": "000100010003",
         "url_path": "/home/signup-complete/",
-        "slug": "signup-complete"
+        "slug": "signup-complete",
+        "locale_id": 1
     }
 },
 {
