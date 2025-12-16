@@ -4,7 +4,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='wagtail-experiments',
-    version='0.4',
+    version='0.5',
     description="A/B testing for Wagtail",
     author='Matthew Westcott',
     author_email='matthew.westcott@torchbox.com',
@@ -26,12 +26,16 @@ setup(
         'Programming Language :: Python :: 3.10',
         'Programming Language :: Python :: 3.11',
         'Programming Language :: Python :: 3.12',
+        'Programming Language :: Python :: 3.13',
         'Framework :: Django',
         'Framework :: Django :: 4.2',
         'Framework :: Django :: 5.0',
+        'Framework :: Django :: 5.1',
+        'Framework :: Django :: 5.2',
         'Framework :: Wagtail',
         'Framework :: Wagtail :: 5',
         'Framework :: Wagtail :: 6',
+        'Framework :: Wagtail :: 7',
     ],
 )
 
